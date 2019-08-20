@@ -1,0 +1,8 @@
+*.pyc
+.vscode
+.pyc
+agents/__pycache__/*
+agents/migrations/__pycache__/*
+core/__pycache__/*
+core/migrations/__pycache__/*
+gualmar/__pycache__/*
