@@ -4,16 +4,15 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title> {% block tittle %}{% endblock %} </title>
-        
-        {% load static %}
+        <title>{% block tittle %}{% endblock %}</title>
 
         {% include "base/head.html" %}
+        {% include "base/scripts.html" %}
     </head>
     <body>
         {% block body %}
         
         {% endblock %}
     </body>
-        {% include "base/scripts.html" %}
+        
 </html>
