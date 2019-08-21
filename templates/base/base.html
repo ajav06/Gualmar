@@ -7,6 +7,9 @@
         <title>{% block tittle %}{% endblock %}</title>
 
         {% include "base/head.html" %}
+        {% block head %}
+        
+        {% endblock %}
     </head>
     <body>
         {% block body %}
