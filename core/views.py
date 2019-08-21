@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import ListView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
 from .models import Article
 
@@ -45,3 +46,6 @@ class ListShoppingCart(ListView):
             montoT += cart.amount
         context["total"] = montoT
         return context
+        
+class login(LoginView):
+    template_name = 'registration/login.html'

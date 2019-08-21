@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -128,3 +129,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # AUTH CONFIG
 AUTH_USER_MODEL = 'core.User'
+
+LOGIN_URL = reverse_lazy('')
+LOGIN_REDIRECT_URL = reverse_lazy('dashboard')
+LOGOUT_REDIRECT_URL = reverse_lazy('login')
