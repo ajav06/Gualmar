@@ -72,6 +72,7 @@ class Search(models.Model):
     id_session = models.CharField(max_length=50, verbose_name="Id de la Sesión")
     user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
     phrase = models.CharField(max_length=50, verbose_name="Frase de Búsqueda")
+    category = models.ForeignKey(CategoryArticle, verbose_name="Categoria de Búsqueda", on_delete=models.CASCADE)
     time = models.FloatField(max_length=10, verbose_name="Tiempo de Búsqueda")
 
     class Meta:
