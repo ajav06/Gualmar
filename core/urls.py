@@ -8,4 +8,5 @@ urlpatterns = [
     path('dashboard/', views.DashboardViews.as_view(), name="dashboard"),
     path('cart/', TemplateView.as_view(template_name='core/cart.html'), name="cart"),
     path('profile/', TemplateView.as_view(template_name='core/profile.html'), name="profile"),
+    path('ajax/getarticle/', views.obtenerarticulo, name='obtenerarticulo'),
 ]
