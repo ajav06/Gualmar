@@ -7,12 +7,12 @@
         <title>{% block tittle %}{% endblock %}</title>
 
         {% include "base/head.html" %}
-        {% include "base/scripts.html" %}
     </head>
     <body>
         {% block body %}
         
         {% endblock %}
     </body>
-        
+
+    {% include "base/scripts.html" %}
 </html>
