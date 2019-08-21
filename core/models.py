@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     birth_date = models.DateField(null=True, blank=True, verbose_name = "Fecha de Nacimiento")
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name = "Número Telefonico")
+
     class Meta:
         verbose_name = "usuario"
         verbose_name_plural = "usuarios"
@@ -50,6 +51,7 @@ class Article(models.Model):
     price = models.FloatField(verbose_name="Precio", max_length=30)
     categories = models.ManyToManyField(CategoryArticle, verbose_name='Categorías', related_name='get_posts')
     created = models.DateTimeField(verbose_name='Fecha de Creación', auto_now_add=True)
+    status = models.BooleanField(verbose_name="Estado", default=True)
 
     class Meta:
         verbose_name = 'artículo'
@@ -73,18 +75,6 @@ class Search(models.Model):
     def __str__(self):
         return self.phrase
 
-
-class Purchase(models.Model):
-    user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
-    amount = models.FloatField(max_length=30, verbose_name="Monto de Compra")
-    address = models.ForeignKey(Address, verbose_name="Dirección de Envio", on_delete=models.CASCADE)
-    date = models.DateField(default=timezone.now, verbose_name="Fecha de Compra")
-
-    class Meta:
-        verbose_name = 'compra'
-        verbose_name_plural = 'compras'
-
-
 class ShoppingCart(models.Model):
     user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
 
@@ -95,7 +85,12 @@ class ShoppingCart(models.Model):
 
 class PaymentDetails(models.Model):
     user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
-
+    TYPE_STATUTUS = (
+        ('e', 'Exitosa'),
+        ('f', 'Fallida'),
+        ('i', 'Inactiva')
+    )
+    status = models.CharField(max_length=1, choices=TYPE_STATUTUS)
 
     class Meta:
         verbose_name = 'detalles de pago'
@@ -103,6 +98,16 @@ class PaymentDetails(models.Model):
 
 class Bill(models.Model):
     user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
+    amount = models.FloatField(max_length=30, verbose_name="Monto Total de la Compra")
+    payment = models.ForeignKey(PaymentDetails, verbose_name="Detalles del Pago", on_delete=models.CASCADE)
+    address = models.ForeignKey(Address, verbose_name="Dirección de Envio", on_delete=None)
+    date = models.DateField(verbose_name="Fecha de Facturación", auto_now_add=True)
+    TYPE_STATUTUS = (
+        ('a', 'Activa'),
+        ('d','Devuelta'),
+        ('i', 'Inactiva')
+    )
+    status = models.CharField(max_length=1, choices=TYPE_STATUTUS, verbose_name="Estado de la Factura")
 
     class Meta:
         verbose_name = 'factura'
@@ -111,6 +116,9 @@ class Bill(models.Model):
 
 class BillDetails(models.Model):
     bill = models.ForeignKey(Bill, verbose_name="Id de la Factura", on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, verbose_name="Artículo", on_delete=None)
+    quantity = models.FloatField(max_length=4, verbose_name="Cantidad del Artículo")
+    amount = models.FloatField(max_length=30, verbose_name="Monto por Cantidad de Artículo")
 
     class Meta:
         verbose_name = 'detalle de factura'
