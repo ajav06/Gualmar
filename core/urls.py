@@ -1,7 +1,8 @@
 from django.urls import path
-from django.views.generic import TemplateView
+from django.contrib.auth.views import LoginView
+from . import views
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='core/login.html')),
-    path('dashboard/', TemplateView.as_view(template_name='core/dashboard.html'), name="dashboard"),
+    path('', LoginView.as_view()),
+    path('dashboard/', views.DashboardViews.as_view(), name="dashboard"),
 ]
