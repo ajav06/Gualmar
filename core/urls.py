@@ -5,4 +5,5 @@ from . import views
 urlpatterns = [
     path('', LoginView.as_view()),
     path('dashboard/', views.DashboardViews.as_view(), name="dashboard"),
+    path('cart/', TemplateView.as_view(template_name='core/cart.html'), name="cart"),
 ]
