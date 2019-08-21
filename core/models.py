@@ -58,7 +58,7 @@ class Article(models.Model):
     class Meta:
         verbose_name = 'artículo'
         verbose_name_plural = 'artículos'
-        ordering = ['-created']
+        ordering = ['code']
 
     def __str__(self):
         return self.name
