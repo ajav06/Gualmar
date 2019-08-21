@@ -5,7 +5,7 @@
         <i class="home icon"></i>
         Inicio
     </a>
-    <a class="{% if '/cart/' in request.path %}active{% endif %} item" href="{% url 'cart' %}">
+    <a class="{% if '/cart/' in request.path %}active{% endif %} item" href="{% url 'cart' user.id %}">
         <i class="shopping cart icon"></i>
         Mi Carrito
     </a>

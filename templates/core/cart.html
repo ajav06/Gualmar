@@ -8,45 +8,33 @@
 
 {% include "base/topbar.html" %}
 
-<div class="ui content segment" style="background-color:#cbbede;">
-  <div class="ui very relaxed large divided selection list">
-    <div class="item">
-      <img src="{% static 'semantic/images/logo.png' %}" class="ui tiny circular fluid image">
-      <div class="content">
-        <a class="header">
-          <p style="color:#1b1725">Laptop HP</p>
-        </a>
-        <div class="description">
-          <p style="color:#595660"><b>Precio: </b>$199,99<br/><b>Cantidad: </b>2<br/><b>Total a Pagar: </b>$398,98</p>
+{% if carts %}
+
+  <div class="ui content segment" style="background-color:#cbbede;">
+    <div class="ui very relaxed large divided selection list">
+      {% for cart in carts %}
+        <div class="item">
+          <img src="{{cart.article.image.url}}" class="ui tiny circular fluid image">
+          <div class="content">
+            <a class="header">
+              <p style="color:#1b1725">{{cart.article.name}}</p>
+            </a>
+            <div class="description">
+              <p style="color:#595660"><b>Precio: </b>${{cart.article.price}}<br /><b>Cantidad:
+                </b>{{cart.quantity}}<br /><b>Total a Pagar: </b>${{cart.amount}}</p>
+            </div>
+          </div>
         </div>
-      </div>
+      {% endfor %}
+      <div style="float:right; font-size:18px;"><b>Total a pagar: </b>${{total}}</div><br />
     </div>
-    <div class="item">
-      <img src="{% static 'semantic/images/logo.png' %}" class="ui tiny circular fluid image">
-      <div class="content">
-        <a class="header">
-          <p style="color:#1b1725">Laptop HP</p>
-        </a>
-        <div class="description">
-          <p style="color:#595660"><b>Precio: </b>$199,99<br/><b>Cantidad: </b>2<br/><b>Total a Pagar: </b>$398,98</p>
-        </div>
-      </div>
-    </div>
-    <div class="item">
-      <img src="{% static 'semantic/images/logo.png' %}" class="ui tiny circular fluid image">
-      <div class="content">
-        <a class="header">
-          <p style="color:#1b1725">Laptop HP</p>
-        </a>
-        <div class="description">
-          <p style="color:#595660"><b>Precio: </b>$199,99<br/><b>Cantidad: </b>2<br/><b>Total a Pagar: </b>$398,98</p>
-        </div>
-      </div>
-    </div>
-    <div style="float:right; font-size:18px;"><b>Total a pagar: </b>$1.999,99</div><br/>
+    <a href="{% url 'dashboard' %}"><button class="ui left floated red big button" style="margin-left:2em"><i
+          class="ui icon arrow alternate circle left"></i>Atrás</button></a>
+    <button class="ui right floated green big button" style="margin-right:2em"><i
+        class="ui icon handshake outline"></i>Pagar</button>
+    <br /><br /><br />
   </div>
-  <a href="{% url 'dashboard' %}"><button class="ui left floated red big button" style="margin-left:2em"><i class="ui icon arrow alternate circle left"></i>Atrás</button></a>
-  <button class="ui right floated green big button" style="margin-right:2em"><i class="ui icon handshake outline"></i>Pagar</button>
-    <br/><br/><br/>
-</div>
+
+{% endif %}
+
 {% endblock %}

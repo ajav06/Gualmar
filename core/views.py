@@ -30,3 +30,18 @@ def obtenerarticulo(request):
         'image' : articulo.image.url,
     }
     return JsonResponse(data)
+
+
+class ListShoppingCart(ListView):
+    model = models.ShoppingCart
+    template_name = 'core/cart.html'
+
+    def get_context_data(self, **kwargs):
+        user = self.kwargs.get('pk')
+        context = super().get_context_data(**kwargs)
+        context["carts"] = models.ShoppingCart.objects.filter(user__id=user)
+        montoT = 0
+        for cart in context["carts"]:
+            montoT += cart.amount
+        context["total"] = montoT
+        return context
