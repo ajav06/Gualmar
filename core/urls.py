@@ -8,5 +8,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name="logout"),
     path('dashboard/', views.DashboardViews.as_view(), name="dashboard"),
     path('cart/<pk>/', views.ListShoppingCart.as_view(), name="cart"),
+    path('profile/', TemplateView.as_view(template_name='core/profile.html'), name="profile"),
+    path('ajax/getarticle/', views.obtenerarticulo, name='obtenerarticulo'),
     path('dashboard/ajax/getarticle/', views.obtenerarticulo, name='obtenerarticulo'),
 ]

@@ -1,0 +1,56 @@
+{% extends "base/base.html" %}
+
+{% load static %}
+
+{% block tittle %}Gualmar - Perfil.{% endblock %}
+
+{% block body %}
+
+{% include "base/topbar.html" %}
+
+<div class="ui grid" style="margin-top:60px;margin-bottom:2px;">
+  <div class="ui centered card" style="width:45%;background-color:#cbbede;">
+    <h4 class="ui horizontal divider header">
+      <i class="user icon"></i>
+      Perfil
+    </h4>
+    <div class="one column row">
+      <div class="column">
+        <img class="ui small circular centered image" src="{% static 'semantic/images/logo.png' %}">
+      </div><br>
+    </div>
+    <div class="one column row">
+      <div class="column ">
+        <div class="ui content">
+          <div class="ui center aligned header">Kristy Sanchez</div>
+          <div class="center aligned description">
+            <p><b>Nombre de usuario:</b> @lakrsty </p>
+            <p><b>Teléfono:</b> 0414-76356222 </p>
+            <p><b>Correo:</b> lakrysty@gmail.com </p>
+            <p><b>Fecha de nacimiento:</b> 05/10/1990 </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h4 class="ui horizontal divider header">
+      <i class="home icon"></i>
+      Dirección
+    </h4>
+    <div class="one column row">
+      <div class="column ">
+        <div class="center aligned description">
+          <p><b>País:</b> Venezuela </p>
+          <p><b>Estado:</b> Lara </p>
+          <p><b>Ciudad:</b> Barqisimeto </p>
+          <p><b>Dirección:</b> la calle de tu corazón </p>
+        </div><br>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+<script>
+
+</script>

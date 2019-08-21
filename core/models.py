@@ -118,7 +118,7 @@ class PaymentDetails(models.Model):
         return self.transaction_code
 
 class Bill(models.Model):
-    """ Modelo de la Factura de compra realizada por Usuario """"
+    """ Modelo de la Factura de compra realizada por Usuario """
     user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
     amount = models.FloatField(max_length=30, verbose_name="Monto Total de la Compra")
     payment = models.ForeignKey(PaymentDetails, verbose_name="Detalles del Pago", on_delete=models.CASCADE)
