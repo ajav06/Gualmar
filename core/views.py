@@ -9,6 +9,7 @@ from . import models
 # Create your views here.
 
 class DashboardViews(ListView):
+    """ Patalla de Inicio """
     model = models.Article
     template_name='core/dashboard.html'
 
@@ -19,6 +20,8 @@ class DashboardViews(ListView):
         return context
 
 def obtenerarticulo(request):
+    """ Función para mostrar información 
+        de un Artículo en una modal """
     codigo = request.POST.get('codigo', None)
     if codigo:
         articulo = Article.objects.get(code=codigo)
@@ -34,6 +37,7 @@ def obtenerarticulo(request):
 
 
 class ListShoppingCart(ListView):
+    """ Lista de Carrito de Compra por Usuario """
     model = models.ShoppingCart
     template_name = 'core/cart.html'
 
@@ -46,6 +50,7 @@ class ListShoppingCart(ListView):
             montoT += cart.amount
         context["total"] = montoT
         return context
-        
+
 class login(LoginView):
+    """ Inicio de Sesión del Usuario """
     template_name = 'registration/login.html'
