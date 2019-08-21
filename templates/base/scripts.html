@@ -26,44 +26,33 @@ function confirmarCierreSesion(){
     }
   })
 }
+</script>
 
-function Consultar(){
-Swal.fire({
-  title: '',
-  text: 'Modal with a custom image.',
-  imageUrl: 'https://unsplash.it/400/200',
-  imageWidth: 400,
-  imageHeight: 200,
-  imageAlt: 'Custom image',
-  animation: false
-  inputAttributes: {
-    autocapitalize: 'off'
-  },
-  showCancelButton: true,
-  confirmButtonText: 'Look up',
-  showLoaderOnConfirm: true,
-  preConfirm: (login) => {
-    return fetch(`//api.github.com/users/${login}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(response.statusText)
-        }
-        return response.json()
-      })
-      .catch(error => {
-        Swal.showValidationMessage(
-          `Request failed: ${error}`
-        )
-      })
-  },
-  allowOutsideClick: () => !Swal.isLoading()
-}).then((result) => {
-  if (result.value) {
-    Swal.fire({
-      title: `${result.value.login}'s avatar`,
-      imageUrl: result.value.avatar_url
-    })
-  }
-})
+<script>
+function Consultar(codigo){
+  var token = $('input[name="csrfmiddlewaretoken"]').val();
+  $.ajax({
+    url: 'ajax/getarticle/',
+    type: 'POST',
+    data: {
+      'codigo' : codigo,
+      'csrfmiddlewaretoken' : token
+    },
+    dataType: 'json',
+    success: function(data){
+      Swal.fire({
+        title: data.nombre,
+        type: 'info',
+        html: 
+          '<img src="' + data.imagen + '">' +
+          '<strong>Nombre: </strong>' + data.nombre +
+          '<strong>Descripción: </strong>' + data.descripcion +
+          '<strong>Precio: </strong>' + data.precio,
+        showCloseButton: true,
+        closeButtonText: 'Cerrar',
+        showConfirmButton: false
+      })  
+    }
+  })
 }
 </script>

@@ -19,12 +19,14 @@ class DashboardViews(ListView):
 
 def obtenerarticulo(request):
     codigo = request.POST.get('codigo', None)
-    articulo = Article.objects.get(code=codigo)
+    if codigo:
+        articulo = Article.objects.get(code=codigo)
+    else:
+        articulo = Article.objects.get(code=1)
     data = {
         'nombre' : articulo.name,
-        'descripcion' : articulo.descripcion,
+        'descripcion' : articulo.description,
         'precio' : articulo.price,
-        'categoria' : articulo.categories,
         'image' : articulo.image.url,
     }
     return JsonResponse(data)
