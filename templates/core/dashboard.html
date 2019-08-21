@@ -19,6 +19,7 @@
 </div>
 
 <div class="ui grid" style="margin-right:2px;margin-left:2px;">
+{% csrf_token %}
     {% for category in categories %}
         <div class="ui segment" style="background-color:#cbbede;">
             <h3><b>{{category.name}}</b></h3><br>
@@ -28,7 +29,7 @@
                         {% for articleCategory in article.categories.all %}
                             {% ifequal articleCategory.id category.id %}
                                 <div class="ui card" style="background-color:#d5d7df;"
-                                    onclick="javascript:Consultar();">
+                                    onclick="javascript:Consultar({{ article.code }});">
                                     <div class="content">
                                         <div class="ui grid">
                                             <div class="four wide column ui circular fluid middle aligned image">
