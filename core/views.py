@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
-from .models import Article, Address
+from .models import Article, Address, User
 
 from . import models
 
@@ -56,10 +56,13 @@ class login(LoginView):
     template_name = 'registration/login.html'
 
 class profile(DetailView):
-    model = Address
+    model = User
     template_name= 'core/profile.html'
+
+    def get_object(self, queryset=None):
+        return self.request.user
 
     def get_context_data(self, **kwargs):
         context = super(profile, self).get_context_data(**kwargs)
-       
+        context['direccion'] = Address.objects.get(user = self.request.user.id)
         return context
