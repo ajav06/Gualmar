@@ -5,6 +5,7 @@ from datetime import datetime
 # Create your models here.
 
 class User(AbstractUser):
+    """ Modelo Extendido del Usuario """
     birth_date = models.DateField(null=True, blank=True, verbose_name = "Fecha de Nacimiento")
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name = "Número Telefonico")
 
@@ -18,6 +19,7 @@ class User(AbstractUser):
     
 
 class Address(models.Model):
+    """ Modelo de Dirección por Usuario """
     user = models.ForeignKey(User, verbose_name = "Usuario", on_delete=models.CASCADE)
     country = models.CharField(max_length=100, blank=True, verbose_name = "País")
     location = models.CharField(max_length=50, blank=True, verbose_name = "Estado")
@@ -33,6 +35,7 @@ class Address(models.Model):
 
 
 class CategoryArticle(models.Model):
+    """ Modelo de Categoria por Artículo """
     name = models.CharField(verbose_name='Nombre', max_length=100)
     created = models.DateTimeField(verbose_name='Fecha de Creación', auto_now_add=True)
     updated = models.DateTimeField(verbose_name='Fecha de Edición', auto_now=True)
@@ -46,6 +49,7 @@ class CategoryArticle(models.Model):
         return self.name
 
 class Article(models.Model):
+    """ Modelo de Artículo """
     code = models.CharField(max_length=10, primary_key=True, verbose_name="Código")
     name = models.CharField(max_length=50, unique=True, verbose_name="Nombre")
     description = models.TextField(verbose_name="Descripción")
@@ -63,8 +67,8 @@ class Article(models.Model):
     def __str__(self):
         return self.name
 
-
 class Search(models.Model):
+    """ Modelo de Busqueda de Artículos o Categorias por Usuario """
     id_session = models.CharField(max_length=50, verbose_name="Id de la Sesión")
     user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
     phrase = models.CharField(max_length=50, verbose_name="Frase de Búsqueda")
@@ -78,6 +82,7 @@ class Search(models.Model):
         return self.phrase
 
 class ShoppingCart(models.Model):
+    """ Modelo del Carrito de Compra por Usuario """
     user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
     article = models.ForeignKey(Article, verbose_name="Artículo a Comprar", on_delete=models.CASCADE)
     quantity = models.IntegerField(verbose_name="Cantidad del Artículo")
@@ -91,6 +96,7 @@ class ShoppingCart(models.Model):
         return "{}".format(self.id)
 
 class PaymentDetails(models.Model):
+    """ Modelo de Detalles de Pago realizados por el Usuario """
     user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
     PAYMENT_TYPE = (
         ('tc', 'Tarjeta de Crédito'),
@@ -112,6 +118,7 @@ class PaymentDetails(models.Model):
         return self.transaction_code
 
 class Bill(models.Model):
+    """ Modelo de la Factura de compra realizada por Usuario """
     user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
     amount = models.FloatField(max_length=30, verbose_name="Monto Total de la Compra")
     payment = models.ForeignKey(PaymentDetails, verbose_name="Detalles del Pago", on_delete=models.CASCADE)
@@ -133,6 +140,7 @@ class Bill(models.Model):
 
 
 class BillDetails(models.Model):
+    """ Modelo de Detalle Factura de compra """
     bill = models.ForeignKey(Bill, verbose_name="Id de la Factura", on_delete=models.CASCADE)
     article = models.ForeignKey(Article, verbose_name="Artículo Comprado", on_delete=None)
     quantity = models.IntegerField(verbose_name="Cantidad del Artículo")
