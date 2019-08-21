@@ -1,11 +1,11 @@
 {% load static %}
 
 <div class="ui labeled icon inverted menu">
-    <a class="active item">
+    <a class="{% if '/dashboard/' in request.path %}active{% endif %} item" href="{% url 'dashboard' %}">
         <i class="home icon"></i>
         Inicio
     </a>
-    <a class="item">
+    <a class="{% if '/cart/' in request.path %}active{% endif %} item" href="{% url 'cart' %}">
         <i class="shopping cart icon"></i>
         Mi Carrito
     </a>
