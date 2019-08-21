@@ -1,9 +1,6 @@
 {% load static %}
 
-<script
-  src="https://code.jquery.com/jquery-3.1.1.min.js"
-  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
-  crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 
 <script src="{% static 'semantic/semantic.min.js' %}"></script>
 
@@ -22,7 +19,7 @@ function confirmarCierreSesion(){
     cancelButtonText: 'Cancelar'
   }).then((result) => {
     if (result.value) {
-      location.href = "/"
+      location.href = "/logout/"
     }
   })
 }
@@ -42,16 +39,20 @@ function Consultar(codigo){
     success: function(data){
       Swal.fire({
         title: data.nombre,
-        type: 'info',
         html: 
-          '<img src="' + data.imagen + '">' +
-          '<strong>Nombre: </strong>' + data.nombre +
-          '<strong>Descripción: </strong>' + data.descripcion +
-          '<strong>Precio: </strong>' + data.precio,
-        showCloseButton: true,
-        closeButtonText: 'Cerrar',
-        showConfirmButton: false
-      })  
+          '<img class="ui centered circular small image" src="' + data.image + '"><br/>' +
+          '<strong>Nombre: </strong>' + data.nombre + '<br/>' +
+          '<strong>Descripción: </strong>' + data.descripcion + '<br/>' +
+          '<strong>Precio: </strong>' + data.precio, 
+        showConfirmButton: true,
+        confirmButtonText: 'Añadir al Carrito',
+        showCancelButton: true,
+        cancelButtonText: 'Salir'
+      }).then((result) => {
+        if (result.value) {
+          Swal.fire('AÑADIDO POLIEDRO!!!');
+        }
+      })
     }
   })
 }
