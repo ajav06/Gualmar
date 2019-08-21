@@ -29,7 +29,7 @@ class Address(models.Model):
         verbose_name_plural = "direcciones"
 
     def __str__(self):
-        return self.user.username
+        return self.address
 
 
 class CategoryArticle(models.Model):
@@ -53,6 +53,7 @@ class Article(models.Model):
     categories = models.ManyToManyField(CategoryArticle, verbose_name='Categorías', related_name='get_posts')
     created = models.DateTimeField(verbose_name='Fecha de Creación', auto_now_add=True)
     status = models.BooleanField(verbose_name="Estado", default=True)
+    image = models.ImageField(verbose_name='Imagen', upload_to='article', null=True, blank=True)
 
     class Meta:
         verbose_name = 'artículo'
@@ -78,24 +79,37 @@ class Search(models.Model):
 
 class ShoppingCart(models.Model):
     user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, verbose_name="Artículo a Comprar", on_delete=models.CASCADE)
+    quantity = models.IntegerField(verbose_name="Cantidad del Artículo")
+    amount = models.FloatField(max_length=30, verbose_name="Monto por Cantidad de Artículo")
 
     class Meta:
         verbose_name = 'carrito de compra'
         verbose_name_plural = 'carritos de compra'
 
+    def __str__(self):
+        return "{}".format(self.id)
 
 class PaymentDetails(models.Model):
     user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
+    PAYMENT_TYPE = (
+        ('tc', 'Tarjeta de Crédito'),
+        ('pp', 'Paypal')
+    )
+    payment_type = models.CharField(max_length=2, choices=PAYMENT_TYPE, verbose_name="Tipo de Pago")
+    transaction_code = models.CharField(max_length=20, verbose_name="Código de la Transacción")
     TYPE_STATUTUS = (
         ('e', 'Exitosa'),
-        ('f', 'Fallida'),
-        ('i', 'Inactiva')
+        ('f', 'Fallida')
     )
-    status = models.CharField(max_length=1, choices=TYPE_STATUTUS)
+    status = models.CharField(max_length=1, choices=TYPE_STATUTUS, verbose_name="Estado de la Transacción")
 
     class Meta:
         verbose_name = 'detalles de pago'
         verbose_name_plural = 'detalles de pagos'
+
+    def __str__(self):
+        return self.transaction_code
 
 class Bill(models.Model):
     user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
@@ -114,13 +128,19 @@ class Bill(models.Model):
         verbose_name = 'factura'
         verbose_name_plural = 'facturas'
 
+    def __str__(self):
+        return "{}".format(self.id)
+
 
 class BillDetails(models.Model):
     bill = models.ForeignKey(Bill, verbose_name="Id de la Factura", on_delete=models.CASCADE)
-    article = models.ForeignKey(Article, verbose_name="Artículo", on_delete=None)
-    quantity = models.FloatField(max_length=4, verbose_name="Cantidad del Artículo")
+    article = models.ForeignKey(Article, verbose_name="Artículo Comprado", on_delete=None)
+    quantity = models.IntegerField(verbose_name="Cantidad del Artículo")
     amount = models.FloatField(max_length=30, verbose_name="Monto por Cantidad de Artículo")
 
     class Meta:
         verbose_name = 'detalle de factura'
         verbose_name_plural = 'detalles de facturas'
+
+    def __str__(self):
+        return "{}".format(self.id)
