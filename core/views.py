@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
-from .models import Article
+from .models import Article, Address
 
 from . import models
 
@@ -49,3 +49,12 @@ class ListShoppingCart(ListView):
         
 class login(LoginView):
     template_name = 'registration/login.html'
+
+class profile(DetailView):
+    model = Address
+    template_name= 'core/profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(profile, self).get_context_data(**kwargs)
+       
+        return context
