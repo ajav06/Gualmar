@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from datetime import datetime
 
 # Create your models here.
 
@@ -78,7 +79,7 @@ class Purchase(models.Model):
     user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
     amount = models.FloatField(max_length=30, verbose_name="Monto de Compra")
     address = models.ForeignKey(Address, verbose_name="Dirección de Envio", on_delete=models.CASCADE)
-    date = models.DateField(default=timezone.now, verbose_name="Fecha de Compra")
+    date = models.DateField(default=datetime.now, verbose_name="Fecha de Compra")
 
     class Meta:
         verbose_name = 'compra'
