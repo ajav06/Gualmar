@@ -1,17 +1,21 @@
 {% load static %}
 
-<div class="ui pointing menu">
+<div class="ui labeled icon inverted menu">
     <a class="active item">
+        <i class="home icon"></i>
         Inicio
     </a>
     <a class="item">
+        <i class="shopping cart icon"></i>
         Mi Carrito
-    </a>
-    <a class="item">
-        Perfil
     </a>
     <div class="right menu">
         <a class="item">
+            <i class="user circle icon"></i>
+            Perfil
+        </a>
+        <a class="item" onclick="javascript:confirmarCierreSesion();">
+            <i class="sign-out icon"></i>
             Cerrar Sesión
         </a>
     </div>

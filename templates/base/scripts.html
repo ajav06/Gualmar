@@ -6,3 +6,24 @@
   crossorigin="anonymous"></script>
 
 <script src="{% static 'semantic/semantic.min.js' %}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+
+<script>
+function confirmarCierreSesion(){
+  Swal.fire({
+    title: '¿Seguro que deseas cerrar sesión?',
+    text: "Tus ítem guardados en el carrito de compras no se perderán.",
+    type: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Cerrar sesión',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.value) {
+      location.href = "/"
+    }
+  })
+}
+</script>
