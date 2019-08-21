@@ -1,0 +1,71 @@
+{% extends "base/base.html" %}
+
+{% load static %}
+
+{% block tittle %}Gualmar - Tus compras inteligentes.{% endblock %}
+
+{% block body %}
+
+{% include "base/topbar.html" %}
+
+<div class="segment">
+    <div class="ui search">
+        <div class="ui icon input">
+            <input class="prompt" type="text" placeholder="Search countries...">
+            <i class="search icon"></i>
+        </div>
+    </div>
+</div>
+
+<h3><br>Tecnología<br></h3>
+<div class="ui equal width grid">
+    <div class="row">
+        <div class="column">
+            <div class="ui segment">
+                <div class="item">
+                    <div class="content">
+                        <img class="ui avatar image" src="{% static 'semantic/images/gualmar_logo.png' %}">
+                        <div class="header">Laptop Nvidia</div>
+                        Este producto puede cambiar tu vida...
+                        Precio $50
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui segment">
+                <div class="item">
+                    <img class="ui avatar image" src="{% static 'semantic/images/gualmar_logo.png' %}">
+                    <div class="content">
+                        <div class="header">Nokia</div>
+                        No disponible
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui segment">
+                <div class="item">
+                    <img class="ui avatar image" src="{% static 'semantic/images/gualmar_logo.png' %}">
+                    <div class="content">
+                        <div class="header">Mouse</div>
+                        algo ahí
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui segment">
+                <div class="item">
+                    <img class="ui avatar image" src="{% static 'semantic/images/gualmar_logo.png' %}">
+                    <div class="content">
+                        <div class="header">Powerbank</div>
+                        algo ahí
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
