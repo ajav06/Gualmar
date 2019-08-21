@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import ListView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
 from .models import Article
 
@@ -30,3 +31,6 @@ def obtenerarticulo(request):
         'image' : articulo.image.url,
     }
     return JsonResponse(data)
+
+class login(LoginView):
+    template_name = 'registration/login.html'
