@@ -1,0 +1,38 @@
+{% extends "base/base.html" %}
+
+{% load static %}
+
+{% block tittle %}Gualmar - Perfil.{% endblock %}
+
+{% block body %}
+
+{% include "base/topbar.html" %}
+
+<div class="ui grid" style="margin-top:60px;margin-bottom:2px;">
+  <div class="ui centered card">
+    <div class="image">
+      <img src="{% static 'semantic/images/logo.png' %}">
+    </div>
+    <div class="content">
+      <a class="header">Kristy</a>
+      <div class="meta">
+        <span class="date">Joined in 2013</span>
+      </div>
+      <div class="description">
+        Kristy is an art director living in New York.
+      </div>
+    </div>
+    <div class="extra content">
+      <a>
+        <i class="user icon"></i>
+        22 Friends
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+
+{% endblock script %}

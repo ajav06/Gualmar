@@ -10,7 +10,7 @@
         Mi Carrito
     </a>
     <div class="right menu">
-        <a class="item">
+        <a class="{% if '/profile/' in request.path %}active{% endif %} item" href="{% url 'profile' %}">
             <i class="user circle icon"></i>
             Perfil
         </a>
