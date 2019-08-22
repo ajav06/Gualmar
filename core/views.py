@@ -140,3 +140,4 @@ def payments(request):
 
 def purchases(request):
     return render(request, 'core/purchases.html', {})
+

@@ -111,3 +111,6 @@ function EliminarItemCarrito(codigo) {
 
 $('.ui.dropdown')
     .dropdown();
+
+$('.ui.accordion')
+    .accordion();
