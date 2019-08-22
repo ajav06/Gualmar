@@ -21,10 +21,12 @@ class DashboardViews(CreateView):
 
     def form_valid(self, form):
         response = redirect(reverse_lazy('profile'))
-        response.set_cookie('search', json.dumps(dict(self.request.POST)))
-        search = models.Search()
         formu = form.save(commit=False)
+        response.set_cookie('search-phrase', formu.phrase)
+        response.set_cookie('search-category', formu.category)
+        search = models.Search()
         search.phrase = formu.phrase
+        search.category = formu.category
         search.id_session = self.request.COOKIES['sessionid']
         search.user = self.request.user
         search.save()
@@ -71,6 +73,19 @@ def añadircarrito(request):
     except:
         return JsonResponse({'exito':False})
 
+def eliminarcarrito(request):
+    """ Función que elimina un item del
+        carrito de compras """
+    try:
+        codigocarrito = request.POST.get('codigo', None)
+        if not codigocarrito:
+            codigocarrito = 1
+        carrito = ShoppingCart.objects.get(id = codigocarrito)
+        carrito.delete()
+        return JsonResponse({'exito':True})
+    except:
+        return JsonResponse({'exito':False})
+
 class ListShoppingCart(ListView):
     """ Lista de Carrito de Compra por Usuario """
     model = models.ShoppingCart
@@ -83,10 +98,14 @@ class ListShoppingCart(ListView):
         user = self.request.user
         context = super().get_context_data(**kwargs)
         context["carts"] = models.ShoppingCart.objects.filter(user__id=user.id)
+        if context["carts"]:
+            context["hay"] = True
+        else:
+            context["hay"] = False
         montoT = 0
         for cart in context["carts"]:
             montoT += cart.amount
-        context["total"] = montoT
+        context["total"] = round(montoT,2)
         return context
 
 class login(LoginView):
@@ -105,16 +124,16 @@ class profile(DetailView):
         context['direccion'] = Address.objects.get(user = self.request.user.id)
         return context
 
-class SearchCreateView(CreateView):
-    model = models.Search
-    fields = ['phrase']
-    template_name = "core/dashboard.html"
-    #success_url = reverse_lazy('profile')
+class SearchView(ListView):
+    model = models.Article
+    template_name = "core/dashboard.html"  
 
-    def form_valid(self, form):
-        response = redirect(reverse_lazy('profile'))
-        response.set_cookie('f2', 'hola')
-        return response
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category = self.COOKIES['search-category']
+        context["articles"] = models.Article.objects.filter(categories=category)
+        return context
+    
         
 def payments(request):
     return render(request, 'core/payments.html', {})
