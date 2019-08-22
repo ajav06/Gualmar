@@ -24,7 +24,11 @@ class DashboardViews(CreateView):
             response.set_cookie('search-phrase', formu.phrase, path='/search/')
         else:
             response.set_cookie('search-phrase', '', path='/search/')
-        response.set_cookie('search-category', formu.category, path='/search/')
+        if formu.category:
+            response.set_cookie('search-category', formu.category, path='/search/')
+        else:
+            response.set_cookie('search-category', '--', path='/search/')
+        
         search = models.Search()
         search.phrase = formu.phrase
         search.category = formu.category
@@ -135,7 +139,10 @@ class SearchView(ListView):
         phrase = self.request.COOKIES['search-phrase']
         category = self.request.COOKIES['search-category']
         context["articles"] = models.Article.objects.filter(name__contains=phrase)
-        context["categories"] = models.CategoryArticle.objects.filter(id=category)
+        if category == '--':
+            context["categories"] = models.CategoryArticle.objects.all()
+        else:
+            context["categories"] = models.CategoryArticle.objects.filter(id=category)
         return context
     
         
