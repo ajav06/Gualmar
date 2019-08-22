@@ -22,21 +22,53 @@
                         style="background-color:transparent;border: none;"></div>
             </div><br/><br/>
             <div class="ui grid centered">
-                <div class="ui five wide column">
+                <div class="ui four wide column">
                     <select class="ui fluid search dropdown" id="test" name="category">
-                        <option value="">Todas las Categorías</option>
+                        <option value="-1">Todas las Categorías</option>
                         {% for category in categories %}
                         <option value="{{category.id}}">{{category.name}}</option>                        
                         {% endfor %}
                     </select>
                 </div>
             </div>
+            <input type="hidden" value="hola" name="time">
         </div>
     </form>
 </div>
 
 <div class="ui grid" style="margin-right:2px;margin-left:2px;">
 {% csrf_token %}
+    {% if category %}
+        <div class="ui segment" style="background-color:#cbbede;">
+            <h3><b>{{category.name}}</b></h3><br>
+            <div class="ui equal width grid">
+                <div class="ui four link cards">
+                    {% for article in articles %}
+                        {% for articleCategory in article.categories.all %}
+                            {% ifequal articleCategory.id category.id %}
+                                <div class="ui card" style="background-color:#d5d7df;"
+                                    onclick="javascript:Consultar({{ article.code }});">
+                                    <div class="content">
+                                        <div class="ui grid">
+                                            <div class="four wide column ui circular fluid middle aligned image">
+                                                <img src="{{article.image.url}}" style="object-fit:cover;">
+                                            </div>
+                                            <div class="twelve wide column">
+                                                <div class="ui header">{{article.name}}</div>
+                                                <p>{{article.description|truncatewords:10}}</p>
+                                                <p><b>Precio:</b> ${{article.price}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endifequal %}                        
+                        {% endfor %}
+                    {% endfor %}
+                    <!--Aqui otros-->
+                </div>
+            </div><br><br>
+        </div>
+    {% else %}
     {% for category in categories %}
         <div class="ui segment" style="background-color:#cbbede;">
             <h3><b>{{category.name}}</b></h3><br>
@@ -60,25 +92,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                {% comment %}
-                                Ganas de Joder de AJAV06
-
-                                <div class="ui card" style="background-color:#d5d7df;">
-                                    <div class="content">
-                                        <div class="ui grid">
-                                            <div class="four wide column ui circular fluid middle aligned image">
-                                                <img src="{% static 'semantic/images/logo.png' %}" style="object-fit: cover;">
-                                            </div>
-                                            <div class="twelve wide column">
-                                                <div class="ui header">Mouse Factory</div>
-                                                <p>Un ratón bien pavo</p>
-                                                <p><b>Precio:</b> $20,99</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endcomment %}
                             {% endifequal %}                        
                         {% endfor %}
                     {% endfor %}
@@ -87,5 +100,6 @@
             </div><br><br>
         </div>
     {% endfor %}
+    {% endif %}
 </div>
 {% endblock %}

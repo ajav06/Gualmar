@@ -17,10 +17,13 @@ class DashboardViews(CreateView):
     model = models.Search
     fields = '__all__'
     template_name = "core/dashboard.html"
-    success_url = reverse_lazy('profile')
+    success_url = reverse_lazy('dashboard')
+    frase = None
+    categoria = None
+    contexto_busqueda = dict()
 
     def form_valid(self, form):
-        response = redirect(reverse_lazy('profile'))
+        response = redirect(reverse_lazy('dashboard'))
         formu = form.save(commit=False)
         response.set_cookie('search-phrase', formu.phrase)
         response.set_cookie('search-category', formu.category)
@@ -34,8 +37,25 @@ class DashboardViews(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['articles'] = models.Article.objects.all()
-        context['categories'] = models.CategoryArticle.objects.all().order_by('name')
+        if self.request.method == 'GET':
+            print('GET REQUEST')
+            context['articles'] = models.Article.objects.all()
+            context['categories'] = models.CategoryArticle.objects.all().order_by('name')
+        else:
+            frase = self.request.POST['phrase']
+            categoria = self.request.POST['category']
+            cat = int(categoria)
+            if cat == -1:
+                print('NO SELECCIONASTE CATEGORIA')
+                context['categories'] = models.CategoryArticle.objects.all().order_by('name')
+                context['articles'] = models.Article.objects.filter(name__contains=frase) | models.Article.objects.filter(description__contains=frase)
+                context['articles'] = context['articles'].distinct()
+            else:
+                print('SELECCIONASTE CATEGORIA')
+                context['category'] = models.CategoryArticle.objects.get(id=categoria)
+                context['categories'] = models.CategoryArticle.objects.all().order_by('name')
+                context['articles'] = models.Article.objects.filter(name__contains=frase) | models.Article.objects.filter(description__contains=frase)
+                context['articles'] = context['articles'].distinct()
         return context
 
 def obtenerarticulo(request):
