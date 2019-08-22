@@ -73,6 +73,19 @@ def añadircarrito(request):
     except:
         return JsonResponse({'exito':False})
 
+def eliminarcarrito(request):
+    """ Función que elimina un item del
+        carrito de compras """
+    try:
+        codigocarrito = request.POST.get('codigo', None)
+        if not codigocarrito:
+            codigocarrito = 1
+        carrito = ShoppingCart.objects.get(id = codigocarrito)
+        carrito.delete()
+        return JsonResponse({'exito':True})
+    except:
+        return JsonResponse({'exito':False})
+
 class ListShoppingCart(ListView):
     """ Lista de Carrito de Compra por Usuario """
     model = models.ShoppingCart
@@ -85,10 +98,14 @@ class ListShoppingCart(ListView):
         user = self.request.user
         context = super().get_context_data(**kwargs)
         context["carts"] = models.ShoppingCart.objects.filter(user__id=user.id)
+        if context["carts"]:
+            context["hay"] = True
+        else:
+            context["hay"] = False
         montoT = 0
         for cart in context["carts"]:
             montoT += cart.amount
-        context["total"] = montoT
+        context["total"] = round(montoT,2)
         return context
 
 class login(LoginView):
@@ -118,3 +135,5 @@ class SearchView(ListView):
         return context
     
         
+def payments(request):
+    return render(request, 'core/payments.html', {})

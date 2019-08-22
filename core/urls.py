@@ -13,4 +13,6 @@ urlpatterns = [
     path('dashboard/ajax/getarticle/', views.obtenerarticulo, name='obtenerarticulo'),
     path('dashboard/ajax/addarticle/', views.añadircarrito, name='añadircarrito'),
     path('search/', views.SearchView.as_view(), name="search"),
+    path('cart/ajax/removearticle/', views.eliminarcarrito, name='eliminarcarrito'),
+    path('payments/', views.payments, name="payments"),
 ]
