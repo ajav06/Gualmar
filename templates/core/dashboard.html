@@ -46,7 +46,7 @@
                     {% for article in articles %}
                         {% for articleCategory in article.categories.all %}
                             {% ifequal articleCategory.id category.id %}
-                                <div class="ui card" style="background-color:#d5d7df;"
+                                <div class="ui card" style="background-color:#c4fcd1;"
                                     onclick="javascript:Consultar({{ article.code }});">
                                     <div class="content">
                                         <div class="ui grid">

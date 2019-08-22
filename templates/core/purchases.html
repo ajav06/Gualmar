@@ -2,11 +2,64 @@
 
 {% load static %}
 
-{% block tittle %}Gualmar - Pagos.{% endblock %}
+{% block tittle %}Gualmar - Mis compras.{% endblock %}
 
 {% block body %}
 
 {% include "base/topbar.html" %}
+
+<div class="ui content segment" style="background-color:#cbbede;">
+    <div class="ui grid" style="margin-top:5px;margin-bottom:5px;margin-left:50px;margin-right:50px;">
+        <div class="ui styled fluid accordion" style="background-color:#c4fcd1;">
+            <div class="title">
+                <a class="header">
+                    <p style="color:#1b1725"><i class="dropdown icon"></i>Factura número: 5500</p>
+                </a>
+                <div class="description">
+                    <p style="color:#595660"><b>Monto total de la compra: </b>$10000<br /><b>Dirección de envío:
+                        </b>calle 49<br /><b>Fecha de Facturación: </b>la fecha de tu corazón:$</p>
+                </div>
+            </div>
+            <div class="content">
+                <p class="transition hidden">
+                    <div class="ui three column grid">
+                        <div class="column">
+                            <label><b>Artículo</b></label>
+                        </div>
+                        <div class="column">
+                            <label><b>Cantidad</b></label>
+                        </div>
+                        <div class="column">
+                            <label><b>Monto unitario</b></label>
+                        </div>
+                        <div class="column">
+                            <label>Laptop HP</label>
+                        </div>
+                        <div class="column">
+                            <label>2</label>
+                        </div>
+                        <div class="column">
+                            <label>$50.00</label>
+                        </div>
+                        <div class="column">
+                            <label>Mouse pepón</label>
+                        </div>
+                        <div class="column">
+                            <label>1</label>
+                        </div>
+                        <div class="column">
+                            <label>$30.00</label>
+                        </div>
+                    </div>
+                </p>
+            </div>
+        </div>
+    </div><br>
+    <a href="{% url 'dashboard' %}"><button class="ui left floated red big button" style="margin-left:3em"><i
+                class="ui icon arrow alternate circle left"></i>Atrás</button></a>
+    <br /><br /><br />
+</div>
+
 
 
 {% endblock %}

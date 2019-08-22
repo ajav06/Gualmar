@@ -115,3 +115,6 @@ $('.ui.dropdown')
 function Buscar() {
     $("#formulario").submit()
 }
+
+$('.ui.accordion')
+    .accordion();
