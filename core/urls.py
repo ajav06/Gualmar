@@ -12,5 +12,6 @@ urlpatterns = [
     path('cart/', views.ListShoppingCart.as_view(), name="cart"),
     path('dashboard/ajax/getarticle/', views.obtenerarticulo, name='obtenerarticulo'),
     path('dashboard/ajax/addarticle/', views.añadircarrito, name='añadircarrito'),
+    path('cart/ajax/removearticle/', views.eliminarcarrito, name='eliminarcarrito'),
     path('dashboard/', views.SearchCreateView.as_view(), name="search"),
 ]

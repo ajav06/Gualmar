@@ -73,3 +73,38 @@ function Consultar(codigo) {
         }
     })
 };
+
+function EliminarItemCarrito(codigo) {
+    Swal.fire({
+        title: '¿Seguro que deseas eliminar el artículo?',
+        text: "Podrás volver a ingresarlo al carrito cuando desees.",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        var token = $('input[name="csrfmiddlewaretoken"]').val();
+        $.ajax({
+            url: 'ajax/removearticle/',
+            type: 'POST',
+            data: {
+                'codigo': codigo,
+                'csrfmiddlewaretoken': token
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data['exito'] == true) {
+                    Swal.fire('Eliminado con éxito');
+                    setTimeout(function() {
+                        window.location.reload(false);
+                    }, 1000);
+                } else {
+                    Swal.fire('Error al eliminar');
+                }
+            }
+        })
+    })
+
+};

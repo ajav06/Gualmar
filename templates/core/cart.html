@@ -12,20 +12,22 @@
 
   <div class="ui content segment" style="background-color:#cbbede;">
     <div class="ui very relaxed large divided selection list">
-      {% for cart in carts %}
-        <div class="item">
-          <img src="{{cart.article.image.url}}" class="ui tiny circular fluid image">
-          <div class="content">
-            <a class="header">
-              <p style="color:#1b1725">{{cart.article.name}}</p>
-            </a>
-            <div class="description">
-              <p style="color:#595660"><b>Precio: </b>${{cart.article.price}}<br /><b>Cantidad:
-                </b>{{cart.quantity}}<br /><b>Total a Pagar: </b>${{cart.amount}}</p>
+    {% csrf_token %}
+        {% for cart in carts %}
+          <div class="middle aligned item">
+            <img src="{{cart.article.image.url}}" class="ui tiny circular fluid image">
+            <div class="content">
+              <a class="header">
+                <p style="color:#1b1725">{{cart.article.name}}</p>
+              </a>
+              <div class="description">
+                <p style="color:#595660"><b>Precio: </b>${{cart.article.price}}<br /><b>Cantidad:
+                  </b>{{cart.quantity}}<br /><b>Total a Pagar: </b>${{cart.amount}}</p>
+              </div>
             </div>
+            <a class="ui large right floated red button" style="margin-top:1.5em;display: flex; align-items: center;" onclick="javascript:EliminarItemCarrito({{cart.id}});"><i class="ui icon x icon"></i>Remover</a>
           </div>
-        </div>
-      {% endfor %}
+        {% endfor %}
       <div style="float:right; font-size:18px;"><b>Total a pagar: </b>${{total}}</div><br />
     </div>
     <a href="{% url 'dashboard' %}"><button class="ui left floated red big button" style="margin-left:2em"><i
@@ -35,6 +37,14 @@
     <br /><br /><br />
   </div>
 
-{% endif %}
+{% else %}
 
+  <div class="ui content segment" style="background-color:#cbbede;">
+    <div class="ui header centered">
+      No hay ítems en tu carrito de compras.<br/>
+      <a href="{% url 'dashboard' %}" class="ui big teal button" style="margin-top:1em;"><i class="ui icon arrow alternate circle left"></i>Volver</a>
+    </div>
+  </div>
+
+{% endif %}
 {% endblock %}
