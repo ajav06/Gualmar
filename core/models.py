@@ -46,7 +46,7 @@ class CategoryArticle(models.Model):
         ordering = ['-created']
 
     def __str__(self):
-        return self.name
+        return '{}'.format(self.id)
 
 class Article(models.Model):
     """ Modelo de Artículo """
