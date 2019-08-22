@@ -4,7 +4,7 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.forms import Form
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
-from .models import Article, Address, User, ShoppingCart
+from .models import Article, Address, User, ShoppingCart, Bill, BillDetails
 
 from . import models
 
@@ -142,6 +142,9 @@ class SearchView(ListView):
 def payments(request):
     return render(request, 'core/payments.html', {})
 
-def purchases(request):
-    return render(request, 'core/purchases.html', {})
+class purchases(ListView):
+    model = Bill
+    template_name = 'core/purchases.html'
+
+    
 
