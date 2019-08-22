@@ -8,8 +8,6 @@ from .models import Article, Address, User, ShoppingCart
 
 from . import models
 
-import json
-
 # Create your views here.
 
 class DashboardViews(CreateView):
@@ -125,13 +123,16 @@ class profile(DetailView):
         return context
 
 class SearchView(ListView):
+    """ Página de Búsqueda """ 
     model = models.Article
     template_name = "core/dashboard.html"  
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        category = self.COOKIES['search-category']
-        context["articles"] = models.Article.objects.filter(categories=category)
+        phrase = self.request.COOKIES['search-phrase']
+        category = self.request.COOKIES['search-category']
+        context["articles"] = models.Article.objects.filter(name__contains=phrase)
+        context["categories"] = models.CategoryArticle.objects.filter(name=category)
         return context
     
         
