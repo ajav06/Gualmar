@@ -9,8 +9,9 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name="logout"),
     path('dashboard/', views.DashboardViews.as_view(), name="dashboard"),
     path('profile/', profile.as_view(template_name='core/profile.html'), name="profile"),
-    path('cart/<pk>/', views.ListShoppingCart.as_view(), name="cart"),
+    path('cart/', views.ListShoppingCart.as_view(), name="cart"),
     path('dashboard/ajax/getarticle/', views.obtenerarticulo, name='obtenerarticulo'),
+    path('dashboard/ajax/addarticle/', views.añadircarrito, name='añadircarrito'),
     path('dashboard/', views.SearchCreateView.as_view(), name="search"),
     path('payments/', views.payments, name="payments"),
 ]
