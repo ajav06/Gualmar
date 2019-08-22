@@ -8,5 +8,44 @@
 
 {% include "base/topbar.html" %}
 
+<div class="ui content segment" style="background-color:#cbbede;">
+    <div class="ui very relaxed large divided selection list">
+        <div class="middle aligned item">
+            <div class="content">
+                <a class="header">
+                    <p style="color:#1b1725">Factura número: 5000</p>
+                </a>
+                <div class="description">
+                    <p style="color:#595660"><b>Monto total de la compra: </b>$10000<br /><b>Dirección de envío:
+                        </b>calle 49<br /><b>Fecha de Facturación: </b>la fecha de tu corazón:$</p>
+                </div>
+            </div>
+            <a class="ui large right floated green button"
+                style="margin-top:-4.5em;display: flex; align-items: center;"><i class="ui eye icon"></i>Ver detalle
+                factura</a>
+        </div>
+    </div>
+    <div class="ui very relaxed large divided selection list">
+        <div class="middle aligned item">
+            <div class="content">
+                <a class="header">
+                    <p style="color:#1b1725">Factura número: 5000</p>
+                </a>
+                <div class="description">
+                    <p style="color:#595660"><b>Monto total de la compra: </b>$10000<br /><b>Dirección de envío:
+                        </b>calle 49<br /><b>Fecha de Facturación: </b>la fecha de tu corazón:$</p>
+                </div>
+            </div>
+            <a class="ui large right floated green button"
+                style="margin-top:-4.5em;display: flex; align-items: center;"><i class="ui eye icon"></i>Ver detalle
+                factura</a>
+        </div>
+    </div>
+    <a href="{% url 'dashboard' %}"><button class="ui left floated red big button" style="margin-left:2em"><i
+                class="ui icon arrow alternate circle left"></i>Atrás</button></a>
+    <br /><br /><br />
+</div>
+
+
 
 {% endblock %}
