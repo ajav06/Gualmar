@@ -99,7 +99,7 @@ function EliminarItemCarrito(codigo) {
                     Swal.fire('Eliminado con éxito');
                     setTimeout(function() {
                         window.location.reload(false);
-                    }, 1000);
+                    }, 500);
                 } else {
                     Swal.fire('Error al eliminar');
                 }
@@ -108,3 +108,6 @@ function EliminarItemCarrito(codigo) {
     })
 
 };
+
+$('.ui.dropdown')
+    .dropdown();

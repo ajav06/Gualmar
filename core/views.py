@@ -35,7 +35,7 @@ class DashboardViews(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['articles'] = models.Article.objects.all()
-        context['categories'] = models.CategoryArticle.objects.all()
+        context['categories'] = models.CategoryArticle.objects.all().order_by('name')
         return context
 
 def obtenerarticulo(request):
