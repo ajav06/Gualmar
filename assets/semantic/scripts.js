@@ -38,7 +38,36 @@ function Consultar(codigo) {
                 cancelButtonText: 'Salir'
             }).then((result) => {
                 if (result.value) {
-                    Swal.fire('AÑADIDO POLIEDRO!!!');
+                    $.ajax({
+                        url: 'ajax/addarticle/',
+                        type: 'POST',
+                        data: {
+                            'codigo': codigo,
+                            'csrfmiddlewaretoken': token
+                        },
+                        dataType: 'json',
+                        success: function(data) {
+                            if (data['exito'] == true) {
+                                Swal.fire({
+                                    title: 'Éxito en el guardado',
+                                    text: "El ítem ha sido guardado en el carrito" +
+                                        " con éxito. Puedes seguir comprando!",
+                                    type: 'info',
+                                    showCancelButton: false,
+                                    confirmButtonText: 'Aceptar'
+                                })
+                            } else {
+                                Swal.fire({
+                                    title: 'Fracaso en el guardado',
+                                    text: "El ítem no ha sido guardado en el carrito." +
+                                        " Intente nuevamente.",
+                                    type: 'warning',
+                                    showCancelButton: false,
+                                    confirmButtonText: 'Aceptar'
+                                })
+                            }
+                        }
+                    })
                 }
             })
         }

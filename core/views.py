@@ -4,7 +4,7 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.forms import Form
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
-from .models import Article, Address, User
+from .models import Article, Address, User, ShoppingCart
 
 from . import models
 
@@ -56,6 +56,8 @@ def añadircarrito(request):
     """ Función que añade un artículo al carrito
         de compras de un usuario """
     codigoart = request.POST.get('codigo', None)
+    if not codigoart:
+        codigoart = 1
     articulo = Article.objects.get(code=codigoart)
     user = request.user    
     sc = ShoppingCart()
@@ -63,11 +65,11 @@ def añadircarrito(request):
     sc.article = articulo
     sc.quantity = 1
     sc.amount = articulo.price
-    if sc.save():
+    try:
+        sc.save()
         return JsonResponse({'exito':True})
-    else:
+    except:
         return JsonResponse({'exito':False})
-
 
 class ListShoppingCart(ListView):
     """ Lista de Carrito de Compra por Usuario """
