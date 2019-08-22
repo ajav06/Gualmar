@@ -11,4 +11,5 @@ urlpatterns = [
     path('profile/', profile.as_view(template_name='core/profile.html'), name="profile"),
     path('cart/<pk>/', views.ListShoppingCart.as_view(), name="cart"),
     path('dashboard/ajax/getarticle/', views.obtenerarticulo, name='obtenerarticulo'),
+    path('dashboard/', views.SearchCreateView.as_view(), name="search"),
 ]

@@ -69,18 +69,19 @@ class Article(models.Model):
 
 class Search(models.Model):
     """ Modelo de Busqueda de Artículos o Categorias por Usuario """
-    id_session = models.CharField(max_length=50, verbose_name="Id de la Sesión")
-    user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
-    phrase = models.CharField(max_length=50, verbose_name="Frase de Búsqueda")
-    category = models.ForeignKey(CategoryArticle, verbose_name="Categoria de Búsqueda", on_delete=models.CASCADE)
-    time = models.FloatField(max_length=10, verbose_name="Tiempo de Búsqueda")
+    id_session = models.CharField(
+        max_length=50, verbose_name="Id de la Sesión", blank=True, null=True)
+    user = models.ForeignKey(User, verbose_name="Usuario",
+                             on_delete=models.CASCADE, blank=True, null=True)
+    phrase = models.CharField(
+        max_length=50, verbose_name="Frase de Búsqueda", blank=True, null=True)
+    category = models.ForeignKey(CategoryArticle, verbose_name="Categoria de Búsqueda", on_delete=models.CASCADE, blank=True, null=True)
+    time = models.FloatField(
+        max_length=10, verbose_name="Tiempo de Búsqueda", blank=True, null=True)
 
     class Meta:
         verbose_name = 'búsqueda de artículo'
         verbose_name_plural = 'búsqueda de artículos'
-
-    def __str__(self):
-        return self.phrase
 
 class ShoppingCart(models.Model):
     """ Modelo del Carrito de Compra por Usuario """
