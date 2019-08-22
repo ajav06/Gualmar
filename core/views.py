@@ -25,6 +25,7 @@ class DashboardViews(CreateView):
         search = models.Search()
         formu = form.save(commit=False)
         search.phrase = formu.phrase
+        search.category = formu.category
         search.id_session = self.request.COOKIES['sessionid']
         search.user = self.request.user
         search.save()
@@ -33,7 +34,7 @@ class DashboardViews(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['articles'] = models.Article.objects.all()
-        context['categories'] = models.CategoryArticle.objects.all()
+        context['categories'] = models.CategoryArticle.objects.all().order_by('name')
         return context
 
 def obtenerarticulo(request):
