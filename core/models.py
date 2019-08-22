@@ -89,6 +89,12 @@ class ShoppingCart(models.Model):
     article = models.ForeignKey(Article, verbose_name="Artículo a Comprar", on_delete=models.CASCADE)
     quantity = models.IntegerField(verbose_name="Cantidad del Artículo")
     amount = models.FloatField(max_length=30, verbose_name="Monto por Cantidad de Artículo")
+    TYPE_STATUS = (
+        ('a', 'Activo'),
+        ('c', 'Comprado'),
+        ('e', 'Eliminado')
+    )
+    status = models.CharField(max_length=1, choices=TYPE_STATUS, verbose_name="Estado del ítem en carrito")
 
     class Meta:
         verbose_name = 'carrito de compra'
@@ -106,11 +112,11 @@ class PaymentDetails(models.Model):
     )
     payment_type = models.CharField(max_length=2, choices=PAYMENT_TYPE, verbose_name="Tipo de Pago")
     transaction_code = models.CharField(max_length=20, verbose_name="Código de la Transacción")
-    TYPE_STATUTUS = (
+    TYPE_STATUS = (
         ('e', 'Exitosa'),
         ('f', 'Fallida')
     )
-    status = models.CharField(max_length=1, choices=TYPE_STATUTUS, verbose_name="Estado de la Transacción")
+    status = models.CharField(max_length=1, choices=TYPE_STATUS, verbose_name="Estado de la Transacción")
 
     class Meta:
         verbose_name = 'detalles de pago'
@@ -126,12 +132,12 @@ class Bill(models.Model):
     payment = models.ForeignKey(PaymentDetails, verbose_name="Detalles del Pago", on_delete=models.CASCADE)
     address = models.ForeignKey(Address, verbose_name="Dirección de Envio", on_delete=None)
     date = models.DateField(verbose_name="Fecha de Facturación", auto_now_add=True)
-    TYPE_STATUTUS = (
+    TYPE_STATUS = (
         ('a', 'Activa'),
         ('d','Devuelta'),
         ('i', 'Inactiva')
     )
-    status = models.CharField(max_length=1, choices=TYPE_STATUTUS, verbose_name="Estado de la Factura")
+    status = models.CharField(max_length=1, choices=TYPE_STATUS, verbose_name="Estado de la Factura")
 
     class Meta:
         verbose_name = 'factura'

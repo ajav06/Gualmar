@@ -52,16 +52,35 @@ def obtenerarticulo(request):
     }
     return JsonResponse(data)
 
+def añadircarrito(request):
+    """ Función que añade un artículo al carrito
+        de compras de un usuario """
+    codigoart = request.POST.get('codigo', None)
+    articulo = Article.objects.get(code=codigoart)
+    user = request.user    
+    sc = ShoppingCart()
+    sc.user = user
+    sc.article = articulo
+    sc.quantity = 1
+    sc.amount = articulo.price
+    if sc.save():
+        return JsonResponse({'exito':True})
+    else:
+        return JsonResponse({'exito':False})
+
 
 class ListShoppingCart(ListView):
     """ Lista de Carrito de Compra por Usuario """
     model = models.ShoppingCart
     template_name = 'core/cart.html'
 
+    def get_object(self, queryset=None):
+        return self.request.user
+
     def get_context_data(self, **kwargs):
-        user = self.kwargs.get('pk')
+        user = self.request.user
         context = super().get_context_data(**kwargs)
-        context["carts"] = models.ShoppingCart.objects.filter(user__id=user)
+        context["carts"] = models.ShoppingCart.objects.filter(user__id=user.id)
         montoT = 0
         for cart in context["carts"]:
             montoT += cart.amount
