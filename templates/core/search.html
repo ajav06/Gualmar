@@ -1,0 +1,51 @@
+{% extends "base/base.html" %}
+
+{% load static %}
+
+{% block tittle %}Gualmar - Tus compras inteligentes.{% endblock %}
+
+{% block body %}
+
+{% include "base/topbar.html" %}
+
+
+<div class="ui grid" style="margin-right:2px;margin-left:2px;">
+    {% csrf_token %}
+    {% for category in categories %}
+    <div class="ui segment" style="background-color:#cbbede;">
+        <h3><b>{{category.name}}</b></h3><br>
+        <div class="ui equal width grid">
+            <div class="ui four link cards">
+                {% if articles %}
+                    {% for article in articles %}
+                        {% for articleCategory in article.categories.all %}
+                            {% ifequal articleCategory.id category.id %}
+                                <div class="ui card" style="background-color:#d5d7df;"
+                                    onclick="javascript:Consultar({{ article.code }});">
+                                    <div class="content">
+                                        <div class="ui grid">
+                                            <div class="four wide column ui circular fluid middle aligned image">
+                                                <img src="{{article.image.url}}" style="object-fit:cover;">
+                                            </div>
+                                            <div class="twelve wide column">
+                                                <div class="ui header">{{article.name}}</div>
+                                                <p>{{article.description|truncatewords:10}}</p>
+                                                <p><b>Precio:</b> ${{article.price}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {% endifequal %}
+                        {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    <h2>No Hay Artículos con ese Nombre</h2>
+                {% endif %}
+                <!--Aqui otros-->
+            </div>
+        </div><br><br>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

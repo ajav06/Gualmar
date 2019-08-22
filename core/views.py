@@ -18,10 +18,13 @@ class DashboardViews(CreateView):
     success_url = reverse_lazy('profile')
 
     def form_valid(self, form):
-        response = redirect(reverse_lazy('profile'))
+        response = redirect(reverse_lazy('search'))
         formu = form.save(commit=False)
-        response.set_cookie('search-phrase', formu.phrase)
-        response.set_cookie('search-category', formu.category)
+        if formu.phrase:
+            response.set_cookie('search-phrase', formu.phrase, path='/search/')
+        else:
+            response.set_cookie('search-phrase', '', path='/search/')
+        response.set_cookie('search-category', formu.category, path='/search/')
         search = models.Search()
         search.phrase = formu.phrase
         search.category = formu.category
@@ -125,14 +128,14 @@ class profile(DetailView):
 class SearchView(ListView):
     """ Página de Búsqueda """ 
     model = models.Article
-    template_name = "core/dashboard.html"  
+    template_name = "core/search.html"  
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         phrase = self.request.COOKIES['search-phrase']
         category = self.request.COOKIES['search-category']
         context["articles"] = models.Article.objects.filter(name__contains=phrase)
-        context["categories"] = models.CategoryArticle.objects.filter(name=category)
+        context["categories"] = models.CategoryArticle.objects.filter(id=category)
         return context
     
         
