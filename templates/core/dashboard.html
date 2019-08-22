@@ -9,16 +9,23 @@
 {% include "base/topbar.html" %}
 
 <div class="ui one column centered grid" style="margin-top:2px;margin-bottom:2px;">
-    <form method="POST">
+    <form method="POST" class="ui form">
     {% csrf_token %}
-        <div class="ui fluid category search">
+        <div class="field ui input">
+            <select class="ui fluid search dropdown" name="category">
+                <option value="">Categoria</option>
+                {% for category in categories %}
+                    <option value="{{category.id}}">{{category.name}}</option>
+                {% endfor %}
+            </select>
+
             <div class="ui action left icon input">
                 <i class="search icon"></i>
                 <input class="prompt" placeholder="Buscar..." type="text" name="phrase">
-                <div class="ui teal button"><input type="submit" value="Búsqueda"
-                        style="background-color:transparent;border: none;"></div>
             </div>
-            <div class="results"></div>
+
+            <div class="ui teal button"><input type="submit" value="Búsqueda"
+                style="background-color:transparent;border: none;"></div> 
         </div>
     </form>
 </div>
