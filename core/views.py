@@ -118,3 +118,6 @@ class SearchCreateView(CreateView):
         
 def payments(request):
     return render(request, 'core/payments.html', {})
+
+def purchases(request):
+    return render(request, 'core/purchases.html', {})
