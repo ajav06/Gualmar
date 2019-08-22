@@ -133,3 +133,5 @@ class SearchCreateView(CreateView):
         response.set_cookie('f2', 'hola')
         return response
         
+def payments(request):
+    return render(request, 'core/payments.html', {})
