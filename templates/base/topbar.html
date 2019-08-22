@@ -5,12 +5,12 @@
         <i class="home icon"></i>
         Inicio
     </a>
-    <a class="{% if '/cart/' in request.path %}active{% endif %} item" href="{% url 'cart' %}">
+    <a class="{% if '/cart/' in request.path %}active{% endif %} item" href="{% url 'cart' user.id %}">
         <i class="shopping cart icon"></i>
         Mi Carrito
     </a>
     <div class="right menu">
-        <a class="item">
+        <a class="{% if '/profile/' in request.path %}active{% endif %} item" href="{% url 'profile' %}">
             <i class="user circle icon"></i>
             {{ user.first_name }} {{user.last_name}}
         </a>
