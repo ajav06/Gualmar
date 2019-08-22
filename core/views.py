@@ -21,9 +21,10 @@ class DashboardViews(CreateView):
 
     def form_valid(self, form):
         response = redirect(reverse_lazy('profile'))
-        response.set_cookie('search', json.dumps(dict(self.request.POST)))
-        search = models.Search()
         formu = form.save(commit=False)
+        response.set_cookie('search-phrase', formu.phrase)
+        response.set_cookie('search-category', formu.category)
+        search = models.Search()
         search.phrase = formu.phrase
         search.category = formu.category
         search.id_session = self.request.COOKIES['sessionid']
@@ -123,16 +124,19 @@ class profile(DetailView):
         context['direccion'] = Address.objects.get(user = self.request.user.id)
         return context
 
-class SearchCreateView(CreateView):
-    model = models.Search
-    fields = ['phrase']
-    template_name = "core/dashboard.html"
-    #success_url = reverse_lazy('profile')
+class SearchView(ListView):
+    model = models.Article
+    template_name = "core/dashboard.html"  
 
-    def form_valid(self, form):
-        response = redirect(reverse_lazy('profile'))
-        response.set_cookie('f2', 'hola')
-        return response
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category = self.COOKIES['search-category']
+        context["articles"] = models.Article.objects.filter(categories=category)
+        return context
+    
         
 def payments(request):
     return render(request, 'core/payments.html', {})
+
+def purchases(request):
+    return render(request, 'core/purchases.html', {})

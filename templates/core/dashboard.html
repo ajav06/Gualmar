@@ -9,7 +9,7 @@
 {% include "base/topbar.html" %}
 
 <div class="ui one column centered grid" style="margin-top:2px;margin-bottom:2px;">
-    <form method="POST">
+    <form method="POST" class="ui form">
     {% csrf_token %}
         <img src="{% static 'semantic/images/gualmar_logo.png' %}" class="image" style="width:450px;height:auto;margin-top:1em;">
         <div class="ui header" style="margin-top:0px;">Gualmar - Tus compras inteligentes</div>

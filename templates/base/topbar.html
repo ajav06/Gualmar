@@ -9,6 +9,10 @@
         <i class="shopping cart icon"></i>
         Mi Carrito
     </a>
+    <a class="{% if '/purchases/' in request.path %}active{% endif %} item" href="{% url 'purchases' %}">
+        <i class="shopping bag icon"></i>
+        Mis compras
+    </a>
     <div class="right menu">
         <a class="{% if '/profile/' in request.path %}active{% endif %} item" href="{% url 'profile' %}">
             <i class="user circle icon"></i>
