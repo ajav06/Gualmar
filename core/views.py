@@ -15,16 +15,23 @@ class DashboardViews(CreateView):
     model = models.Search
     fields = '__all__'
     template_name = "core/dashboard.html"
-    success_url = reverse_lazy('profile')
+    success_url = reverse_lazy('search')
+    frase = None
+    categoria = None
+    contexto_busqueda = dict()
 
     def form_valid(self, form):
         response = redirect(reverse_lazy('search'))
         formu = form.save(commit=False)
         if formu.phrase:
-            response.set_cookie('search-phrase', formu.phrase, path='/search/')
+            response.set_cookie('search-phrase', formu.phrase)
         else:
-            response.set_cookie('search-phrase', '', path='/search/')
-        response.set_cookie('search-category', formu.category, path='/search/')
+            response.set_cookie('search-phrase', '')
+        if formu.category:
+            response.set_cookie('search-category', formu.category)
+        else:
+            response.set_cookie('search-category', '-1')
+        
         search = models.Search()
         search.phrase = formu.phrase
         search.category = formu.category
@@ -132,10 +139,20 @@ class SearchView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        phrase = self.request.COOKIES['search-phrase']
-        category = self.request.COOKIES['search-category']
-        context["articles"] = models.Article.objects.filter(name__contains=phrase)
-        context["categories"] = models.CategoryArticle.objects.filter(id=category)
+        frase = self.request.COOKIES['search-phrase']
+        categoria = self.request.COOKIES['search-category']
+        cat = int(categoria)
+        if cat == -1:
+            print('NO SELECCIONASTE CATEGORIA')
+            context['categories'] = models.CategoryArticle.objects.all().order_by('name')
+            context['articles'] = models.Article.objects.filter(name__contains=frase) | models.Article.objects.filter(description__contains=frase)
+            context['articles'] = context['articles'].distinct()
+        else:
+            print('SELECCIONASTE CATEGORIA')
+            context['category'] = models.CategoryArticle.objects.get(id=categoria)
+            context['categories'] = models.CategoryArticle.objects.all().order_by('name')
+            context['articles'] = models.Article.objects.filter(name__contains=frase) | models.Article.objects.filter(description__contains=frase)
+            context['articles'] = context['articles'].distinct()
         return context
     
         
