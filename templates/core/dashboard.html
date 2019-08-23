@@ -19,24 +19,24 @@
             a tu carrito y comprarlos. Sin embargo, nuestro algoritmo especial de IA estará atento a tu actividad, y te
             sugerirá compras personalizadas basado en eso. ¡Felices compras!</p>
         </div>
-        <div class="ui category search">
-            <div class="ui action left icon input">
+        <div class="ui three column grid container">
+            <div class="column">
+                <select class="ui fluid search dropdown" id="test" name="category">
+                    <option value="">Todas las Categorías</option>
+                    {% for category in categories %}
+                    <option value="{{category.id}}">{{category.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="ui column action left icon input">
                 <i class="search icon"></i>
                 <input class="prompt" placeholder="Buscar..." type="text" name="phrase">
-                <div class="ui teal button"><input type="submit" value="Búsqueda"
-                        style="background-color:transparent;border: none;"></div>
-            </div><br /><br />
-            <div class="ui grid centered">
-                <div class="ui four wide column">
-                    <select class="ui fluid search dropdown" id="test" name="category">
-                        <option value="-1">Todas las Categorías</option>
-                        {% for category in categories %}
-                        <option value="{{category.id}}">{{category.name}}</option>
-                        {% endfor %}
-                    </select>
+            </div>
+            <div class="column">
+                <div class="ui teal button fluid">
+                    <input type="submit" value="Búsqueda" style="background-color:transparent;border: none;">
                 </div>
             </div>
-            {% comment %} <input type="hidden" value="hola" name="time"> {% endcomment %}
         </div>
     </form>
 </div>
