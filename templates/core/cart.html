@@ -10,42 +10,46 @@
 
 {% if carts %}
 
-  <div class="ui content segment" style="background-color:#cbbede;">
-    <div class="ui very relaxed large divided selection list">
+<div class="ui content segment" style="background-color:#cbbede;">
+  <div class="ui very relaxed large divided selection list">
     {% csrf_token %}
-        {% for cart in carts %}
-          <div class="middle aligned item">
-            <img src="{{cart.article.image.url}}" class="ui tiny circular fluid image">
-            <div class="content">
-              <a class="header">
-                <p style="color:#1b1725">{{cart.article.name}}</p>
-              </a>
-              <div class="description">
-                <p style="color:#595660"><b>Precio: </b>${{cart.article.price}}<br /><b>Cantidad:
-                  </b>{{cart.quantity}}<br /><b>Total a Pagar: </b>${{cart.amount}}</p>
-              </div>
-            </div>
-            <a class="ui large right floated red button" style="margin-top:1.5em;display: flex; align-items: center;" onclick="javascript:EliminarItemCarrito({{cart.id}});"><i class="ui icon x icon"></i>Remover</a>
-          </div>
-        {% endfor %}
-      <div style="float:right; font-size:18px;"><b>Total a pagar: </b>${{total}}</div><br />
+    {% for cart in carts %}
+    <div class="middle aligned item">
+      <img src="{{cart.article.image.url}}" class="ui tiny circular fluid image">
+      <div class="content">
+        <a class="header">
+          <p style="color:#1b1725">{{cart.article.name}}</p>
+        </a>
+        <div class="description">
+          <p style="color:#595660"><b>Precio: </b>${{cart.article.price}}<br /><b>Cantidad:
+            </b>{{cart.quantity}}<br /><b>Total a Pagar: </b>${{cart.amount}}</p>
+        </div>
+      </div>
+      <a class="ui large right floated red button" style="margin-top:1.5em;display: flex; align-items: center;"
+        onclick="javascript:EliminarItemCarrito({{cart.id}});"><i class="ui icon x icon"></i>Remover</a>
     </div>
-    <a href="{% url 'dashboard' %}"><button class="ui left floated red big button" style="margin-left:2em"><i
-          class="ui icon arrow alternate circle left"></i>Atrás</button></a>
-    <a  href="{% url 'payments' %}">     
+    {% endfor %}
+    <div style="float:right; font-size:18px;"><b>Total a pagar: </b>${{total}}</div><br />
+  </div>
+  <a href="{% url 'dashboard' %}"><button class="ui left floated red big button" style="margin-left:2em"><i
+        class="ui icon arrow alternate circle left"></i>Atrás</button></a>
+  <a href="{% url 'payments' %}">
     <button class="ui right floated green big button" style="margin-right:2em"><i
         class="ui icon handshake outline"></i>Pagar</button></a>
-    <br /><br /><br />
-  </div>
+  <br /><br /><br />
+</div>
 
 {% else %}
 
-  <div class="ui content segment" style="background-color:#cbbede;">
-    <div class="ui header centered">
-      No hay ítems en tu carrito de compras.<br/>
-      <a href="{% url 'dashboard' %}" class="ui big teal button" style="margin-top:1em;"><i class="ui icon arrow alternate circle left"></i>Volver</a>
-    </div>
+<div class="ui content segment" style="background-color:#cbbede;">
+  <div class="ui header centered" style="margin-top:10px;margin-bottom:15px;">
+    No hay ítems en tu carrito de compras.<br />
+    <a href="{% url 'dashboard' %}" class="ui big teal button" style="margin-top:1em;"><i
+        class="ui icon arrow alternate circle left"></i>Volver</a>
   </div>
+</div>
 
 {% endif %}
+<br /><br /><br />
+
 {% endblock %}

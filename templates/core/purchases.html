@@ -19,8 +19,10 @@
                     <p style="color:#1b1725"><i class="dropdown icon"></i>Factura número: {{ fc.id }} </p>
                 </a>
                 <div class="description">
-                    <p style="color:#595660"><b>Monto total de la compra: </b>$ {{ fc.amount }} <br /><b>Dirección de envío:
-                        </b> {{ fc.address }} <br /><b>Fecha de Facturación: </b> {{ fc.date }} <br/><b>Forma de pago: </b> {{fc.payment.get_payment_type_display}}<br/></p>
+                    <p style="color:#595660"><b>Monto total de la compra: </b>$ {{ fc.amount }} <br /><b>Dirección de
+                            envío:
+                        </b> {{ fc.address }} <br /><b>Fecha de Facturación: </b> {{ fc.date }} <br /><b>Forma de pago:
+                        </b> {{fc.payment.get_payment_type_display}}<br /></p>
                 </div>
             </div>
             <div class="content">
@@ -66,14 +68,14 @@
 
 {% else %}
 
-    <div class="ui centered header">
-        ¡Aún no has comprado en Gualmar! <br/>
-        <a href="{% url 'dashboard' %}"><button class="ui centered teal big button" style="margin-top:1em;"><i
-                    class="ui icon arrow alternate circle left"></i>Atrás</button></a>
-    </div>
+<div class="ui centered header">
+    ¡Aún no has comprado en Gualmar! <br />
+    <a href="{% url 'dashboard' %}"><button class="ui centered teal big button" style="margin-top:1em;"><i
+                class="ui icon arrow alternate circle left"></i>Atrás</button></a>
+</div>
 
-    {% endif %}
-    <br /><br /><br />
+{% endif %}
+<br /><br /><br />
 
 
 {% endblock %}
