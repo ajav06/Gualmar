@@ -15,6 +15,8 @@
             Tarjeta de crédito
         </h4>
         <div class="one column row">
+        <form method="POST">
+        {% csrf_token %}
             <div class="ui content">
                 <div class="justify aligned description">
                     <p><b>Pago seguro:</b> Confirme los productos y el monto total a pagar antes de realizar la
@@ -46,8 +48,8 @@
                         <div class="column">
                             <label><b><i class="calendar alternate icon"></i>Fecha de vencimiento:</b></label>
                         </div>
-                        <div class="column">
-                            <select class="ui simple left floated  dropdown">
+                        <div class="column" style="width:200px">
+                            <select class="ui left floated fluid dropdown">
                                 <option value="1">Enero</option>
                                 <option value="2">Febrero</option>
                                 <option value="3">Marzo</option>
@@ -61,7 +63,9 @@
                                 <option value="11">Noviembre</option>
                                 <option value="12">Diciembre</option>
                             </select>
-                            <select class="ui dropdown">
+                        </div>
+                        <div class="column" style="width:140px;margin-left:-2em;">
+                            <select class="ui right floated fluid dropdown">
                                 <option value="1">19</option>
                                 <option value="2">20</option>
                                 <option value="3">21</option>
@@ -79,15 +83,15 @@
                         </div>
                         <div class="column">
                             <div class="ui fluid input" style="margin-right:50px;">
-                                <input placeholder="Nro de tarjeta..." type="text">
+                                <input placeholder="Nro de tarjeta..." type="number"  required>
                             </div>
                         </div>
                         <div class="column">
-                            <label><b><i class="key icon"></i>Codigo de seguridad:</b></label>
+                            <label><b><i class="key icon"></i>Codigo de seguridad (CVV):</b></label>
                         </div>
                         <div class="column">
                             <div class="ui fluid input" style="margin-right:150px">
-                                <input placeholder="Código de seguridad..." type="text">
+                                <input placeholder="Código de seguridad..." type="number" required>
                             </div>
                         </div>
                         <div class="column">
@@ -95,39 +99,43 @@
                         </div>
                         <div class="column">
                             <div class="ui fluid input" style="margin-right:100px">
-                                <input placeholder="Código de seguridad..." type="text">
+                                <input placeholder="Código de seguridad..." type="text" required>
                             </div>
                         </div>
                         <div class="column">
                             <label><b><i class="user icon"></i>Cédula o Rif:</b></label>
                         </div>
-                        <div class="column">
-                            <select class="ui left floated dropdown">
+                        <div class="column" style="width:90px">
+                            <select class="ui left floated fluid dropdown">
                                 <option value="1">V</option>
-                                <option value="2">R</option>
+                                <option value="2">J</option>
+                                <option value="3">E</option>
                             </select>
-                            <div class="ui input" style="margin-right:30px">
-                                <input placeholder="Cédula o rif..." type="text">
+                        </div>
+                        <div class="column" style="width:220px">
+                            <div class="ui fluid input" style="margin-left:-30px;">
+                                <input placeholder="Cédula o rif..." type="numbe" required>
                             </div>
                         </div>
                         <div class="column">
                             <label><b><i class="phone icon"></i>Teléfono del Tarjetahabiente:</b></label>
                         </div>
                         <div class="column">
-                            <div class="ui input" style="margin-right:150px">
-                                <input placeholder="Teléfono..." type="text">
+                            <div class="ui input" style="margin-right:170px">
+                                <input placeholder="Teléfono..." type="number" required>
                             </div>
                         </div>
-                        <div class="column">
-                            <button class="ui red small button">Cancelar</button>
+                        <div class="column" style="width:150px">
+                            <a href="{% url 'cart' %}" class="ui red fluid small button" style="margin-left:50px" ><i class="ui icon arrow alternate circle left"></i>Cancelar</a>
                         </div>
-                        <div class="column">
-                            <button class="ui green small button">Pagar</button>
+                        <div class="column" style="width:150px">
+                            <button class="ui green fluid small button" style="margin-left:370px;" type="submit"><i class="ui icon handshake outline"></i>Pagar</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        </form>
         <h4 class="ui horizontal divider header">
             <i class="paypal icon"></i>
             Paypal
