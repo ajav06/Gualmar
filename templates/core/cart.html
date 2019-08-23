@@ -15,28 +15,19 @@
     <div class="ui header" style="margin-left:10px">Mi Carrito de Compras</div>
     {% csrf_token %}
         {% for cart in carts %}
-          <div class="item">
-            <div class="ui horizontal segments"  style="background: rgba(215, 44, 94, 0) !important; border: none !important; box-shadow: none !important">
-              <div class="ui segment" style="border: none !important" onclick="javascript:ConsultarCarrito({{cart.article.code}});">
-                <img src="{{cart.article.image.url}}" class="ui tiny circular fluid image">
-                <div class="content">
-                  <a class="header">
-                    <p style="color:#1b1725">{{cart.article.name}}</p>
-                  </a>
-                  <div class="description">
-                    <p style="color:#595660"><b>Precio: </b>${{cart.article.price}}<br /><b>Cantidad:
-                      </b>{{cart.quantity}}<br /><b>Total a Pagar: </b>${{cart.amount}}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="ui segment" style="border: none !important">
-                <a class="ui large right floated red button" style="margin-top:1.5em;display: flex; align-items: center;"
-                  onclick="javascript:EliminarItemCarrito({{cart.id}});"><i class="ui icon x icon"></i>Remover</a>
-              </div>
+           <div class="middle aligned item" >
+            <img src="{{cart.article.image.url}}" class="ui tiny circular fluid image">
+            <div class="content">
+              <a class="header">
+                <p style="color:#1b1725">{{cart.article.name}}</p>
+              </a>
+              <div class="description">
+                <p style="color:#595660"><b>Precio: </b>${{cart.article.price}}<br /><b>Cantidad:
+                  </b>{{cart.quantity}}<br /><b>Total a Pagar: </b>${{cart.amount}}</p>              </div>
             </div>
+          <a class="ui large right floated red button" style="margin-top:1.5em;display: flex; align-items: center;" onclick="javascript:EliminarItemCarrito({{cart.id}});"><i class="ui icon x icon"></i>Remover</a>
+          <a class="ui large right floated teal button" style="margin-top:1.5em;display: flex; align-items: center;" onclick="javascript:ConsultarCarrito({{cart.article.code}});"><i class="ui icon search"></i>Ver</a>
           </div>
-          
         {% endfor %}
       <div style="float:right; font-size:18px;"><b>Total a pagar: </b>${{total}}</div><br />
     </div>

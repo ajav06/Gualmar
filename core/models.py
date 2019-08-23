@@ -87,6 +87,7 @@ class ShoppingCart(models.Model):
     article = models.ForeignKey(Article, verbose_name="Artículo a Comprar", on_delete=models.CASCADE)
     quantity = models.IntegerField(verbose_name="Cantidad del Artículo")
     amount = models.FloatField(max_length=30, verbose_name="Monto por Cantidad de Artículo")
+    sponsored = models.BooleanField(verbose_name="Compra patrocinada", default=False)
     TYPE_STATUS = (
         ('a', 'Activo'),
         ('c', 'Comprado'),
@@ -151,10 +152,23 @@ class BillDetails(models.Model):
     article = models.ForeignKey(Article, verbose_name="Artículo Comprado", on_delete=None)
     quantity = models.IntegerField(verbose_name="Cantidad del Artículo")
     amount = models.FloatField(max_length=30, verbose_name="Monto por Cantidad de Artículo")
+    sponsored = models.BooleanField(verbose_name="Compra patrocinada", default=False)
 
     class Meta:
         verbose_name = 'detalle de factura'
         verbose_name_plural = 'detalles de facturas'
 
+    def __str__(self):
+        return "{}".format(self.id)
+
+class ArticleClick(models.Model):
+    article = models.ForeignKey(Article, verbose_name="Id del Artículo", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
+    date = models.DateField(verbose_name="Fecha del click", auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'click a artículo'
+        verbose_name_plural = 'clicks a artículos'
+    
     def __str__(self):
         return "{}".format(self.id)
