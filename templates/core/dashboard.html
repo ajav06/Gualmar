@@ -10,23 +10,26 @@
 
 <div class="ui one column centered grid" style="margin-top:2px;margin-bottom:2px;">
     <form method="POST" class="ui form">
-    {% csrf_token %}
-        <img src="{% static 'semantic/images/gualmar_logo.png' %}" class="image" style="width:450px;height:auto;margin-top:1em;">
+        {% csrf_token %}
+        <img src="{% static 'semantic/images/gualmar_logo.png' %}" class="image"
+            style="width:450px;height:auto;margin-top:1em;">
         <div class="ui header" style="margin-top:0px;">Gualmar - Tus compras inteligentes</div>
-        <p>Bienvenido a Gualmar. Eres libre de navegar por nuestro sitio, buscar los productos que prefieras y añadirlos a tu carrito y comprarlos. Sin embargo, nuestro algoritmo especial de IA estará atento a tu actividad, y te sugerirá compras personalizadas basado en eso. ¡Felices compras!</p>
-        <div class="ui fluid category search">
+        <p>Bienvenido a Gualmar. Eres libre de navegar por nuestro sitio, buscar los productos que prefieras, añadirlos
+            a tu carrito y comprarlos. Sin embargo, nuestro algoritmo especial de IA estará atento a tu actividad, y te
+            sugerirá compras personalizadas basado en eso. ¡Felices compras!</p>
+        <div class="ui category search">
             <div class="ui action left icon input">
                 <i class="search icon"></i>
                 <input class="prompt" placeholder="Buscar..." type="text" name="phrase">
                 <div class="ui teal button"><input type="submit" value="Búsqueda"
                         style="background-color:transparent;border: none;"></div>
-            </div><br/><br/>
+            </div><br /><br />
             <div class="ui grid centered">
                 <div class="ui four wide column">
                     <select class="ui fluid search dropdown" id="test" name="category">
                         <option value="-1">Todas las Categorías</option>
                         {% for category in categories %}
-                            <option value="{{category.id}}">{{category.name}}</option>                        
+                        <option value="{{category.id}}">{{category.name}}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -37,68 +40,68 @@
 </div>
 
 <div class="ui grid" style="margin-right:2px;margin-left:2px;">
-{% csrf_token %}
+    {% csrf_token %}
     {% if category %}
-        <div class="ui segment" style="background-color:#cbbede;">
-            <h3><b>{{category.name}}</b></h3><br>
-            <div class="ui equal width grid">
-                <div class="ui four link cards">
-                    {% for article in articles %}
-                        {% for articleCategory in article.categories.all %}
-                            {% ifequal articleCategory.id category.id %}
-                                <div class="ui card" style="background-color:#c4fcd1;"
-                                    onclick="javascript:Consultar({{ article.code }});">
-                                    <div class="content">
-                                        <div class="ui grid">
-                                            <div class="four wide column ui circular fluid middle aligned image">
-                                                <img src="{{article.image.url}}" style="object-fit:cover;">
-                                            </div>
-                                            <div class="twelve wide column">
-                                                <div class="ui header">{{article.name}}</div>
-                                                <p>{{article.description|truncatewords:10}}</p>
-                                                <p><b>Precio:</b> ${{article.price}}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endifequal %}                        
-                        {% endfor %}
-                    {% endfor %}
-                    <!--Aqui otros-->
+    <div class="ui segment" style="background-color:#cbbede;">
+        <h3><b>{{category.name}}</b></h3><br>
+        <div class="ui equal width grid">
+            <div class="ui four link cards">
+                {% for article in articles %}
+                {% for articleCategory in article.categories.all %}
+                {% ifequal articleCategory.id category.id %}
+                <div class="ui card" style="background-color:#c4fcd1;"
+                    onclick="javascript:Consultar({{ article.code }});">
+                    <div class="content">
+                        <div class="ui grid">
+                            <div class="four wide column ui circular fluid middle aligned image">
+                                <img src="{{article.image.url}}" style="object-fit:cover;">
+                            </div>
+                            <div class="twelve wide column">
+                                <div class="ui header">{{article.name}}</div>
+                                <p>{{article.description|truncatewords:10}}</p>
+                                <p><b>Precio:</b> ${{article.price}}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div><br><br>
-        </div>
+                {% endifequal %}
+                {% endfor %}
+                {% endfor %}
+                <!--Aqui otros-->
+            </div>
+        </div><br><br>
+    </div>
     {% else %}
     {% for category in categories %}
-        <div class="ui segment" style="background-color:#cbbede;">
-            <h3><b>{{category.name}}</b></h3><br>
-            <div class="ui equal width grid">
-                <div class="ui four link cards">
-                    {% for article in articles %}
-                        {% for articleCategory in article.categories.all %}
-                            {% ifequal articleCategory.id category.id %}
-                                <div class="ui card" style="background-color:#c4fcd1;"
-                                    onclick="javascript:Consultar({{ article.code }});">
-                                    <div class="content">
-                                        <div class="ui grid">
-                                            <div class="four wide column ui circular fluid middle aligned image">
-                                                <img src="{{article.image.url}}" style="object-fit:cover;">
-                                            </div>
-                                            <div class="twelve wide column">
-                                                <div class="ui header">{{article.name}}</div>
-                                                <p>{{article.description|truncatewords:10}}</p>
-                                                <p><b>Precio:</b> ${{article.price}}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endifequal %}                        
-                        {% endfor %}
-                    {% endfor %}
-                    <!--Aqui otros-->
+    <div class="ui segment" style="background-color:#cbbede;">
+        <h3><b>{{category.name}}</b></h3><br>
+        <div class="ui equal width grid">
+            <div class="ui four link cards">
+                {% for article in articles %}
+                {% for articleCategory in article.categories.all %}
+                {% ifequal articleCategory.id category.id %}
+                <div class="ui card" style="background-color:#c4fcd1;"
+                    onclick="javascript:Consultar({{ article.code }});">
+                    <div class="content">
+                        <div class="ui grid">
+                            <div class="four wide column ui circular fluid middle aligned image">
+                                <img src="{{article.image.url}}" style="object-fit:cover;">
+                            </div>
+                            <div class="twelve wide column">
+                                <div class="ui header">{{article.name}}</div>
+                                <p>{{article.description|truncatewords:10}}</p>
+                                <p><b>Precio:</b> ${{article.price}}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div><br><br>
-        </div>
+                {% endifequal %}
+                {% endfor %}
+                {% endfor %}
+                <!--Aqui otros-->
+            </div>
+        </div><br><br>
+    </div>
     {% endfor %}
     {% endif %}
 </div>
