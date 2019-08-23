@@ -4,7 +4,9 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.forms import Form
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
-from .models import Article, Address, User, ShoppingCart, Bill, BillDetails
+from .models import Article, Address, User, ShoppingCart, Bill, BillDetails, PaymentDetails
+import random
+from django.core import serializers
 
 from . import models
 
@@ -94,6 +96,63 @@ def eliminarcarrito(request):
     except:
         return JsonResponse({'exito':False})
 
+def pagar(request):
+    """ Función que simula el pago """
+    try:
+        usuario = request.user
+        #Primero, cargo sus artículos del carrito de compras
+        carrito = ShoppingCart.objects.filter(user=usuario)
+        #Calculo el monto total a pagar
+        monto = 0
+        for articulo in carrito:
+            monto += articulo.amount
+        monto = round(monto,2)
+        #Luego, el tipo de pago (quiero crear la factura)
+        tipo_pago = request.POST.get('tipo', None)
+        #Creo el detalle de pago:
+        dp = PaymentDetails()
+        dp.user = usuario
+        dp.payment_type = tipo_pago
+        dp.transaction_code = str(random.randrange(0,99999999)).zfill(8)
+        dp.status = 'e'
+        dp.save()
+        #Creo la factura:
+        factura = Bill()
+        factura.user = usuario
+        factura.amount = monto
+        factura.address = Address.objects.get(user=usuario)
+        factura.status = 'a'
+        factura.payment = dp
+        factura.save()
+        #Creo los detalle de factura
+        for articulo in carrito:
+            detfact = BillDetails()
+            detfact.bill = factura
+            detfact.article = articulo.article
+            detfact.quantity = articulo.quantity
+            detfact.amount = articulo.amount
+            detfact.save()
+        #Limpio el carrito
+        carrito.delete()        
+        #Listo. Devuelvo que el pago fue exitoso
+        return JsonResponse({'exito':True})
+    except:
+        return JsonResponse({'exito':False})
+
+def detallefactura(request):
+    """ Consulta el detalle de una factura """
+    id_fact = request.POST.get('id')
+    detfacturas = BillDetails.objects.filter(bill_id=id_fact)
+    df = [{}]
+    for detalle in detfacturas:
+        d = {
+            'articulo':detalle.article.name,
+            'foto':detalle.article.image.url,
+            'monto':detalle.amount
+        }
+        df.append(d)
+    return JsonResponse(df,safe=False)
+
 class ListShoppingCart(ListView):
     """ Lista de Carrito de Compra por Usuario """
     model = models.ShoppingCart
@@ -142,15 +201,21 @@ class SearchView(ListView):
         frase = self.request.COOKIES['search-phrase']
         categoria = self.request.COOKIES['search-category']
         cat = int(categoria)
-        if cat == -1:
+            if cat == -1:
             print('NO SELECCIONASTE CATEGORIA')
             context['categories'] = models.CategoryArticle.objects.all().order_by('name')
             context['articles'] = models.Article.objects.filter(name__contains=frase) | models.Article.objects.filter(description__contains=frase)
             context['articles'] = context['articles'].distinct()
+            categorias = []
+            for article in context['articles']:
+                for categ in article.categories.all().order_by('name'):
+                    category = models.CategoryArticle.objects.get(id=categ.id)
+                    if category and category not in categorias:
+                        categorias.append(category)
+            context['categories'] = categorias
         else:
             print('SELECCIONASTE CATEGORIA')
-            context['category'] = models.CategoryArticle.objects.get(id=categoria)
-            context['categories'] = models.CategoryArticle.objects.all().order_by('name')
+            context['categories'] = models.CategoryArticle.objects.all().filter(id=categoria).order_by('name')
             context['articles'] = models.Article.objects.filter(name__contains=frase) | models.Article.objects.filter(description__contains=frase)
             context['articles'] = context['articles'].distinct()
         return context
@@ -163,5 +228,8 @@ class purchases(ListView):
     model = Bill
     template_name = 'core/purchases.html'
 
-    
+    def get_context_data(self, **kwargs):
+        context = super(purchases, self).get_context_data(**kwargs)
+        context['object_list'] = Bill.objects.filter(user=self.request.user.id).order_by('-id')
+        return context
 

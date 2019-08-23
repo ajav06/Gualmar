@@ -52,9 +52,15 @@ function Consultar(codigo) {
                                     title: 'Éxito en el guardado',
                                     text: "El ítem ha sido guardado en el carrito" +
                                         " con éxito. Puedes seguir comprando!",
-                                    type: 'info',
-                                    showCancelButton: false,
-                                    confirmButtonText: 'Aceptar'
+                                    type: 'success',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Ir al Carrito',
+                                    cancelButtonText: 'Seguir Comprando',
+                                    cancelButtonColor: 'teal'
+                                }).then((result) => {
+                                    if (result.value) {
+                                        location.href = "/cart/"
+                                    }
                                 })
                             } else {
                                 Swal.fire({
@@ -74,6 +80,30 @@ function Consultar(codigo) {
     })
 };
 
+function ConsultarCarrito(codigo) {
+    var token = $('input[name="csrfmiddlewaretoken"]').val();
+    $.ajax({
+        url: 'ajax/getarticle/',
+        type: 'POST',
+        data: {
+            'codigo': codigo,
+            'csrfmiddlewaretoken': token
+        },
+        dataType: 'json',
+        success: function(data) {
+            Swal.fire({
+                title: data.nombre,
+                html: '<img class="ui centered circular small image" src="' + data.image + '"><br/>' +
+                    '<strong>Nombre: </strong>' + data.nombre + '<br/>' +
+                    '<strong>Descripción: </strong>' + data.descripcion + '<br/>' +
+                    '<strong>Precio: </strong>' + data.precio,
+                showConfirmButton: true,
+                confirmButtonText: 'Salir'
+            })
+        }
+    })
+};
+
 function EliminarItemCarrito(codigo) {
     Swal.fire({
         title: '¿Seguro que deseas eliminar el artículo?',
@@ -85,36 +115,109 @@ function EliminarItemCarrito(codigo) {
         confirmButtonText: 'Eliminar',
         cancelButtonText: 'Cancelar'
     }).then((result) => {
-        var token = $('input[name="csrfmiddlewaretoken"]').val();
-        $.ajax({
-            url: 'ajax/removearticle/',
-            type: 'POST',
-            data: {
-                'codigo': codigo,
-                'csrfmiddlewaretoken': token
-            },
-            dataType: 'json',
-            success: function(data) {
-                if (data['exito'] == true) {
-                    Swal.fire('Eliminado con éxito');
-                    setTimeout(function() {
-                        window.location.reload(false);
-                    }, 500);
-                } else {
-                    Swal.fire('Error al eliminar');
+        if (result.value) {
+            var token = $('input[name="csrfmiddlewaretoken"]').val();
+            $.ajax({
+                url: 'ajax/removearticle/',
+                type: 'POST',
+                data: {
+                    'codigo': codigo,
+                    'csrfmiddlewaretoken': token
+                },
+                dataType: 'json',
+                success: function(data) {
+                    if (data['exito'] == true) {
+                        Swal.fire('Eliminado con éxito');
+                        setTimeout(function() {
+                            window.location.reload(false);
+                        }, 500);
+                    } else {
+                        Swal.fire('Error al eliminar');
+                    }
                 }
-            }
-        })
+            })
+        }
     })
-
 };
 
 $('.ui.dropdown')
     .dropdown();
 
-function Buscar() {
-    $("#formulario").submit()
-}
-
 $('.ui.accordion')
     .accordion();
+
+function Pagar(tipo) {
+    Swal.fire({
+        title: 'Confirmar pago.',
+        text: "¿Seguro que desea continuar con el pago?",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Confirmar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.value) {
+            var token = $('input[name="csrfmiddlewaretoken"]').val();
+            $.ajax({
+                url: 'ajax/pay/',
+                type: 'POST',
+                data: {
+                    'tipo': tipo,
+                    'csrfmiddlewaretoken': token
+                },
+                dataType: 'json',
+                success: function(data) {
+                    if (data['exito'] == true) {
+                        Swal.fire({
+                            title: 'Pago exitoso',
+                            text: '¡Su pago ha sido exitoso! Gracias por comprar con nosotros.',
+                            type: 'success',
+                            showConfirmButton: false,
+                            showCancelButton: false
+                        });
+                        setTimeout(function() {
+                            window.location.replace('/purchases/');
+                        }, 2500);
+                    } else {
+                        Swal.fire('Error al procesar el pago. Por favor intente nuevamente más tarde.');
+                    }
+                }
+            })
+        }
+    })
+};
+
+$('#formulario_pago').submit(function() {
+    Pagar('tc');
+    return false;
+});
+
+function VerDetFact(id) {
+    $('#dimmer').addClass('active');
+    var token = $('input[name="csrfmiddlewaretoken"]').val();
+    tabla = 'detfact' + id;
+    $('#' + tabla).empty();
+    $.ajax({
+        url: 'ajax/detail/',
+        type: 'POST',
+        data: {
+            'id': id,
+            'csrfmiddlewaretoken': token,
+        },
+        dataType: 'json',
+        success: function(data) {
+            $.each(data, function(i, articulo) {
+                if (i != 0) {
+                    articulo = '<tr>' +
+                        '<td class="centered">' + articulo['articulo'] + '</td>' +
+                        '<td><img class="ui circular tiny image centered" src="' + articulo['foto'] + '"></td>' +
+                        '<td class="centered">$' + articulo['monto'] + '</td>' +
+                        '</tr>';
+                    $('#' + tabla).append(articulo);
+                }
+            })
+        }
+    })
+    $('#dimmer').removeClass('active');
+}
