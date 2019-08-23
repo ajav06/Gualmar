@@ -144,18 +144,13 @@ class SearchView(ListView):
         cat = int(categoria)
         if cat == -1:
             print('NO SELECCIONASTE CATEGORIA')
+            context['categories'] = models.CategoryArticle.objects.all().order_by('name')
             context['articles'] = models.Article.objects.filter(name__contains=frase) | models.Article.objects.filter(description__contains=frase)
             context['articles'] = context['articles'].distinct()
-            categorias = []
-            for article in context['articles']:
-                for categ in article.categories.all().order_by('name'):
-                    category = models.CategoryArticle.objects.get(id=categ.id)
-                    if category and category not in categorias:
-                        categorias.append(category)
-            context['categories'] = categorias
         else:
             print('SELECCIONASTE CATEGORIA')
-            context['categories'] = models.CategoryArticle.objects.all().filter(id=categoria)
+            context['category'] = models.CategoryArticle.objects.get(id=categoria)
+            context['categories'] = models.CategoryArticle.objects.all().order_by('name')
             context['articles'] = models.Article.objects.filter(name__contains=frase) | models.Article.objects.filter(description__contains=frase)
             context['articles'] = context['articles'].distinct()
         return context
