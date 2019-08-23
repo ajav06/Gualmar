@@ -9,51 +9,37 @@
 {% include "base/topbar.html" %}
 
 <div class="ui content segment" style="background-color:#cbbede;">
+{% csrf_token %}
     <div class="ui grid {% if not object_list %}centered{% endif %}"
         style="margin-top:5px;margin-bottom:5px;margin-left:50px;margin-right:50px;">
         {% if object_list %}
+        <div class="ui header">Mis Facturas</div>
         <div class="ui styled fluid accordion" style="background-color:#c4fcd1;">
             {% for fc in object_list %}
-            <div class="title">
-                <a class="header">
-                    <p style="color:#1b1725"><i class="dropdown icon"></i>Factura número: {{ fc.id }} </p>
-                </a>
-                <div class="description">
-                    <p style="color:#595660"><b>Monto total de la compra: </b>$ {{ fc.amount }} <br /><b>Dirección de envío:
-                        </b> {{ fc.address }} <br /><b>Fecha de Facturación: </b> {{ fc.date }} <br/><b>Forma de pago: </b> {{fc.payment.get_payment_type_display}}<br/></p>
+            <div class="title active dimmable middle aligned" onclick="javascript:VerDetFact({{fc.id}});">
+                <div class="ui centered loader" id="dimmer">
                 </div>
+                <a class="header">
+                    <p style="color:#1b1725"><i class="dropdown icon"></i>Factura número: {{ fc.id }} - ${{fc.amount}} el {{fc.date}}.</p>
+                </a>
             </div>
             <div class="content">
                 <p class="transition hidden">
-                    <div class="ui three column grid">
-                        <div class="column">
-                            <label><b>Artículo</b></label>
-                        </div>
-                        <div class="column">
-                            <label><b>Cantidad</b></label>
-                        </div>
-                        <div class="column">
-                            <label><b>Monto unitario</b></label>
-                        </div>
-                        <div class="column">
-                            <label>Laptop HP</label>
-                        </div>
-                        <div class="column">
-                            <label>2</label>
-                        </div>
-                        <div class="column">
-                            <label>$50.00</label>
-                        </div>
-                        <div class="column">
-                            <label>Mouse pepón</label>
-                        </div>
-                        <div class="column">
-                            <label>1</label>
-                        </div>
-                        <div class="column">
-                            <label>$30.00</label>
-                        </div>
+                    <div class="description" style="margin-top:-1.5em;">
+                    <p style="color:#595660"><b>Monto total de la compra: </b>$ {{ fc.amount }} <br /><b>Dirección de envío:
+                            </b> {{ fc.address }} <br /><b>Fecha de Facturación: </b> {{ fc.date }} <br/><b>Forma de pago: </b> {{fc.payment.get_payment_type_display}}<br/><b>Número de Referencia: </b>{{fc.payment.transaction_code}}</p>
                     </div>
+                    <table class="ui single line celled table">
+                    <thead>
+                    <tr>
+                        <th>Artículo</th>
+                        <th>Foto</th>
+                        <th>Monto Pagado</th>
+                    </tr>
+                    </thead>
+                    <tbody id="detfact{{fc.id}}" class="centered">
+                    </tbody>
+                    </table>
                 </p>
             </div>
             {% endfor %}

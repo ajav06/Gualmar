@@ -6,6 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
 from .models import Article, Address, User, ShoppingCart, Bill, BillDetails, PaymentDetails
 import random
+from django.core import serializers
 
 from . import models
 
@@ -138,6 +139,20 @@ def pagar(request):
     except:
         return JsonResponse({'exito':False})
 
+def detallefactura(request):
+    """ Consulta el detalle de una factura """
+    id_fact = request.POST.get('id')
+    detfacturas = BillDetails.objects.filter(bill_id=id_fact)
+    df = [{}]
+    for detalle in detfacturas:
+        d = {
+            'articulo':detalle.article.name,
+            'foto':detalle.article.image.url,
+            'monto':detalle.amount
+        }
+        df.append(d)
+    return JsonResponse(df,safe=False)
+
 class ListShoppingCart(ListView):
     """ Lista de Carrito de Compra por Usuario """
     model = models.ShoppingCart
@@ -209,6 +224,6 @@ class purchases(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(purchases, self).get_context_data(**kwargs)
-        context['object_list'] = Bill.objects.filter(user=self.request.user.id)
+        context['object_list'] = Bill.objects.filter(user=self.request.user.id).order_by('-id')
         return context
 

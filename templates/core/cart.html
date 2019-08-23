@@ -12,9 +12,10 @@
 
   <div class="ui content segment" style="background-color:#cbbede;">
     <div class="ui very relaxed large divided selection list">
+    <div class="ui header" style="margin-left:10px">Mi Carrito de Compras</div>
     {% csrf_token %}
         {% for cart in carts %}
-          <div class="middle aligned item">
+          <div class="middle aligned item" onclick="javascript:ConsultarCarrito({{cart.article.code}});">
             <img src="{{cart.article.image.url}}" class="ui tiny circular fluid image">
             <div class="content">
               <a class="header">
