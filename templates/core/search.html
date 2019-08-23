@@ -10,6 +10,7 @@
 
 
 <div class="ui grid" style="margin-right:2px;margin-left:2px;">
+    <a href="{% url 'dashboard' %}" class="ui large teal left floated button" style="margin-left:15px;margin-top:10px;"><i class="ui icon arrow alternate circle left"></i>Volver</a>
     {% csrf_token %}
     {% for category in categories %}
     <div class="ui segment" style="background-color:#cbbede;">
