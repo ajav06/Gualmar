@@ -9,7 +9,8 @@
 {% include "base/topbar.html" %}
 
 <div class="ui content segment" style="background-color:#cbbede;">
-    <div class="ui grid" style="margin-top:5px;margin-bottom:5px;margin-left:50px;margin-right:50px;">
+    <div class="ui grid {% if not object_list %}centered{% endif %}" style="margin-top:5px;margin-bottom:5px;margin-left:50px;margin-right:50px;">
+        {% if object_list %}
         <div class="ui styled fluid accordion" style="background-color:#c4fcd1;">
         {% for fc in object_list %}
             <div class="title">
@@ -56,6 +57,9 @@
             </div>
             {% endfor %}
         </div>
+        {% else %}
+            <div class="ui centered header">¡Aún no has comprado en Gualmar!</div>
+        {% endif %}
     </div><br>
     <a href="{% url 'dashboard' %}"><button class="ui left floated red big button" style="margin-left:3em"><i
                 class="ui icon arrow alternate circle left"></i>Atrás</button></a>
