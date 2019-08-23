@@ -4,7 +4,7 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.forms import Form
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
-from .models import Article, Address, User, ShoppingCart, Bill, BillDetails, PaymentDetails
+from .models import Article, Address, User, ShoppingCart, Bill, BillDetails, PaymentDetails, ArticleClick
 import random
 from django.core import serializers
 
@@ -62,6 +62,10 @@ def obtenerarticulo(request):
         'precio' : articulo.price,
         'image' : articulo.image.url,
     }
+    click = ArticleClick()
+    click.user = request.user
+    click.article = articulo
+    click.save()
     return JsonResponse(data)
 
 def añadircarrito(request):
@@ -202,7 +206,6 @@ class SearchView(ListView):
         categoria = self.request.COOKIES['search-category']
         cat = int(categoria)
         if cat == -1:
-            print('NO SELECCIONASTE CATEGORIA')
             context['categories'] = models.CategoryArticle.objects.all().order_by('name')
             context['articles'] = models.Article.objects.filter(name__contains=frase) | models.Article.objects.filter(description__contains=frase)
             context['articles'] = context['articles'].distinct()
@@ -214,7 +217,6 @@ class SearchView(ListView):
                         categorias.append(category)
             context['categories'] = categorias
         else:
-            print('SELECCIONASTE CATEGORIA')
             context['categories'] = models.CategoryArticle.objects.all().filter(id=categoria).order_by('name')
             context['articles'] = models.Article.objects.filter(name__contains=frase) | models.Article.objects.filter(description__contains=frase)
             context['articles'] = context['articles'].distinct()
