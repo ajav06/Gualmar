@@ -201,7 +201,7 @@ class SearchView(ListView):
         frase = self.request.COOKIES['search-phrase']
         categoria = self.request.COOKIES['search-category']
         cat = int(categoria)
-            if cat == -1:
+        if cat == -1:
             print('NO SELECCIONASTE CATEGORIA')
             context['categories'] = models.CategoryArticle.objects.all().order_by('name')
             context['articles'] = models.Article.objects.filter(name__contains=frase) | models.Article.objects.filter(description__contains=frase)
