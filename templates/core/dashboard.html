@@ -19,8 +19,9 @@
             a tu carrito y comprarlos. Sin embargo, nuestro algoritmo especial de IA estará atento a tu actividad, y te
             sugerirá compras personalizadas basado en eso. ¡Felices compras!</p>
         </div>
+        
         <div class="ui three column grid container">
-            <div class="column">
+            <div class="column" style="padding: 0 !important;">
                 <select class="ui fluid search dropdown" id="test" name="category">
                     <option value="">Todas las Categorías</option>
                     {% for category in categories %}
@@ -28,11 +29,11 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="ui column action left icon input">
+            <div class="ui column action left icon input" style="padding: 0 !important;">
                 <i class="search icon"></i>
                 <input class="prompt" placeholder="Buscar..." type="text" name="phrase">
             </div>
-            <div class="column">
+            <div class="column" style="padding: 0 !important;">
                 <div class="ui teal button fluid">
                     <input type="submit" value="Búsqueda" style="background-color:transparent;border: none;">
                 </div>
