@@ -4,10 +4,13 @@ from . import models
 
 # Register your models here.
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'first_name', 'last_name', 'email', 'is_active', 'is_staff')
+    list_display = ('username', 'first_name', 'last_name', 'email', 'is_active', 'post_preferences', 'is_staff')
     list_filter = (('is_staff', admin.BooleanFieldListFilter),
                    ('is_active', admin.BooleanFieldListFilter))
 
+    def post_preferences(self, obj):
+        return ", ".join([c.name for c in obj.preferences.all().order_by('name')])
+    post_preferences.short_description = 'Preferencias'
 
 class AddressAdmin(admin.ModelAdmin):
     list_display = ('user', 'country', 'location', 'city', 'address')
