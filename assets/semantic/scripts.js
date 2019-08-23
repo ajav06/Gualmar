@@ -106,15 +106,50 @@ function EliminarItemCarrito(codigo) {
             }
         })
     })
-
 };
 
 $('.ui.dropdown')
     .dropdown();
 
-function Buscar() {
-    $("#formulario").submit()
-}
-
 $('.ui.accordion')
     .accordion();
+
+function Pagar(tipo) {
+    Swal.fire({
+        title: 'Confirmar pago.',
+        text: "¿Seguro que desea continuar con el pago?",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Confirmar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        var token = $('input[name="csrfmiddlewaretoken"]').val();
+        $.ajax({
+            url: 'ajax/pay/',
+            type: 'POST',
+            data: {
+                'tipo': tipo,
+                'csrfmiddlewaretoken': token
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data['exito'] == true) {
+                    Swal.fire({
+                        title: 'Pago exitoso',
+                        text: '¡Su pago ha sido exitoso! Gracias por comprar con nosotros.',
+                        type: 'success',
+                        showConfirmButton: false,
+                        showCancelButton: false
+                    });
+                    setTimeout(function() {
+                        window.location.replace('/purchases/');
+                    }, 2500);
+                } else {
+                    Swal.fire('Error al procesar el pago. Por favor intente nuevamente más tarde.');
+                }
+            }
+        })
+    })
+}

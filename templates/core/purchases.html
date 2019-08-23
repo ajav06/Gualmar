@@ -19,7 +19,7 @@
                 </a>
                 <div class="description">
                     <p style="color:#595660"><b>Monto total de la compra: </b>$ {{ fc.amount }} <br /><b>Dirección de envío:
-                        </b> {{ fc.address }} <br /><b>Fecha de Facturación: </b> {{ fc.date }} </p>
+                        </b> {{ fc.address }} <br /><b>Fecha de Facturación: </b> {{ fc.date }} <br/><b>Forma de pago: </b> {{fc.payment.get_payment_type_display}}<br/></p>
                 </div>
             </div>
             <div class="content">

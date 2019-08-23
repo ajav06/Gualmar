@@ -129,7 +129,7 @@
                             <a href="{% url 'cart' %}" class="ui red fluid small button" style="margin-left:50px" ><i class="ui icon arrow alternate circle left"></i>Cancelar</a>
                         </div>
                         <div class="column" style="width:150px">
-                            <button class="ui green fluid small button" style="margin-left:370px;" type="submit"><i class="ui icon handshake outline"></i>Pagar</button>
+                            <a class="ui green fluid small button" style="margin-left:370px;" onclick="javascript:Pagar('tc')"><i class="ui icon handshake outline"></i>Pagar</a>
                         </div>
                     </div>
                 </div>
@@ -144,7 +144,7 @@
         <div class="ui one column centered grid">
             <div class="one column row">
                 <div class="ui contentrelaxed">
-                    <a class="ui blue big button" style="margin-bottom:2em;"><i class="paypal icon"></i>Paga aquí con Paypal</a>
+                    <a class="ui blue big button" style="margin-bottom:2em;" onclick="javascript:Pagar('pp');"><i class="paypal icon"></i>Paga aquí con Paypal</a>
                 </div>
             </div>
         </div>
