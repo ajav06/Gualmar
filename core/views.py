@@ -207,5 +207,8 @@ class purchases(ListView):
     model = Bill
     template_name = 'core/purchases.html'
 
-    
+    def get_context_data(self, **kwargs):
+        context = super(purchases, self).get_context_data(**kwargs)
+        context['object_list'] = Bill.objects.filter(user=self.request.user.id)
+        return context
 
