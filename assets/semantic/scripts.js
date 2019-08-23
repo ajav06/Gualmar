@@ -112,5 +112,9 @@ function EliminarItemCarrito(codigo) {
 $('.ui.dropdown')
     .dropdown();
 
+function Buscar() {
+    $("#formulario").submit()
+}
+
 $('.ui.accordion')
     .accordion();
