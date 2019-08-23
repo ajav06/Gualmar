@@ -22,18 +22,12 @@
                 <a class="header">
                     <p style="color:#1b1725"><i class="dropdown icon"></i>Factura número: {{ fc.id }} - ${{fc.amount}} el {{fc.date}}.</p>
                 </a>
-                <div class="description">
-                    <p style="color:#595660"><b>Monto total de la compra: </b>$ {{ fc.amount }} <br /><b>Dirección de
-                            envío:
-                        </b> {{ fc.address }} <br /><b>Fecha de Facturación: </b> {{ fc.date }} <br /><b>Forma de pago:
-                        </b> {{fc.payment.get_payment_type_display}}<br /></p>
-                </div>
             </div>
             <div class="content">
                 <p class="transition hidden">
                     <div class="description" style="margin-top:-1.5em;">
                     <p style="color:#595660"><b>Monto total de la compra: </b>$ {{ fc.amount }} <br /><b>Dirección de envío:
-                            </b> {{ fc.address }} <br /><b>Fecha de Facturación: </b> {{ fc.date }} <br/><b>Forma de pago: </b> {{fc.payment.get_payment_type_display}}<br/><b>Número de Referencia: </b>{{fc.payment.transaction_code}}</p>
+                            </b> {{ fc.address }} <br /><b>Fecha de Facturación: </b> {{ fc.date }} <br/><b>Forma de pago: </b> {{fc.payment.get_payment_type_display}}<br/><b>Número de Referencia: </b>{{fc.payment.transaction_code}}<br/></p>
                     </div>
                     <table class="ui single line celled table">
                     <thead>
