@@ -7,10 +7,28 @@ from django.http import JsonResponse
 from .models import Article, Address, User, ShoppingCart, Bill, BillDetails, PaymentDetails, ArticleClick
 import random
 from django.core import serializers
+from django.shortcuts import redirect
+from datetime import datetime
+import time
 
 from . import models
 
 # Create your views here.
+
+class LastAccessMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        request.user.last_access = datetime.now()
+        request.user.save(update_fields=['last_access'])
+        return super(LastAccessMixin, self).dispatch(request, *args, **kwargs)
+
+def dashboard_checker(request):
+    if (request.user.last_login.date()-request.user.last_access.date()).days != 0:
+        return redirect('/cart/')
+    else:
+        return redirect('/dashboard/')
+
+class logout(LastAccessMixin, LogoutView):
+    template_name = 'whatever xd'
 
 class DashboardViews(CreateView):
     """ Patalla de Inicio """
@@ -168,6 +186,7 @@ class ListShoppingCart(ListView):
     def get_context_data(self, **kwargs):
         user = self.request.user
         context = super().get_context_data(**kwargs)
+        #time.sleep(0.5)
         context["carts"] = models.ShoppingCart.objects.filter(user__id=user.id)
         if context["carts"]:
             context["hay"] = True

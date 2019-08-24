@@ -19,7 +19,7 @@
             <img src="{{cart.article.image.url}}" class="ui tiny circular fluid image">
             <div class="content">
               <a class="header">
-                <p style="color:#1b1725">{{cart.article.name}}</p>
+                 <b><p style="color:#1b1725">{% if cart.sponsored %}<a class="ui red small horizontal label">Sugerido</a>{% endif %} {{cart.article.name}}</p></b>
               </a>
               <div class="description">
                 <p style="color:#595660"><b>Precio: </b>${{cart.article.price}}<br /><b>Cantidad:

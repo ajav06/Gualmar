@@ -131,5 +131,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 AUTH_USER_MODEL = 'core.User'
 
 LOGIN_URL = reverse_lazy('')
-LOGIN_REDIRECT_URL = reverse_lazy('dashboard')
+LOGIN_REDIRECT_URL = reverse_lazy('checker')
 LOGOUT_REDIRECT_URL = reverse_lazy('login')

@@ -6,7 +6,8 @@ from .views import profile
 
 urlpatterns = [
     path('', views.login.as_view(), name="login"),
-    path('logout/', LogoutView.as_view(), name="logout"),
+    path('checker/', views.dashboard_checker, name="checker"),
+    path('logout/', views.logout.as_view(), name="logout"),
     path('dashboard/', views.DashboardViews.as_view(), name="dashboard"),
     path('profile/', profile.as_view(template_name='core/profile.html'), name="profile"),
     path('cart/', views.ListShoppingCart.as_view(), name="cart"),

@@ -4,16 +4,19 @@ from spade.agent import Agent
 from spade.behaviour import CyclicBehaviour, OneShotBehaviour
 from spade.message import Message
 from spade.template import Template
-from core.models import Search, User, Article, CategoryArticle, ArticleClick, Bill, BillDetails
+from core.models import Search, User, Article, CategoryArticle, ArticleClick, Bill, BillDetails, ShoppingCart
 import collections
 from datetime import datetime
+from django.core.signals import request_finished
+from django.dispatch import receiver
+from django.contrib.auth.signals import user_logged_in
 
 class AgenteGualmar(Agent): ##El Agente
     ult_busqueda = Search.objects.all().order_by('-id')[0] ##Guarda la última búsqueda
     ult_click = ArticleClick.objects.all().order_by('-id')[0] ##Guarda el último click
-    ult_compra = Bill.objects.all().order_by('-id')[0] ##Guarda la última factura
-    ## al momento de iniciar el servidor
+    ult_compra = Bill.objects.all().order_by('-id')[0] ##Guarda la última factura al momento de iniciar el servidor
     tabla_interes = [] ##Instancia una tabla de interés, vacía, que luego llenará con datos de cada usuario
+    last_logins = [] ##Instancia una tabla con los últimos login de cada usuario.
 
     ## COMPORTAMIENTOS
     ## 1) Comportamiento que inicializa la tabla y que monitorea nuevas búsquedas/clicks.
@@ -21,6 +24,7 @@ class AgenteGualmar(Agent): ##El Agente
     class MonitorBusquedasClicks(CyclicBehaviour):
         async def on_start(self): ##Cuando se ejecuta, quiero que inicialice la tabla.
             for usuario in User.objects.all().order_by('id'): ##Por cada usuario, realiza lo siguiente:
+                self.agent.last_logins.append(usuario.last_login) ##Guardo su último login.
                 categorias = dict() ##Crea un diccionario que guardará las categorías.
                 articulosd = dict() ##Crea un diccionario que guardará los artículos.
                 for categoria in CategoryArticle.objects.all(): ##Carga el diccionario con las categorías,
@@ -29,24 +33,9 @@ class AgenteGualmar(Agent): ##El Agente
                 for busqueda in busquedas: ##Iterando sobre todas sus búsquedas,
                     palabras = busqueda.phrase ##busco su frase.
                     categoria = busqueda.category ##busco su categoría.
-                    if palabras and categoria: ##Si la búsqueda tuvo frase y categoría:
-                        palabras = str(busqueda.phrase).split() ##consigo las frases, las divido en palabras.
-                        for palabra in palabras: ##Por cada palabra,
-                            categorias_añadidas = [] ##voy a guardar las categorías de estos objetos que ya he contado.
-                            for articulo in (Article.objects.filter(name__contains=palabra) | Article.objects.filter(description__contains=palabra)).distinct(): ##Sobre los artículos que resultan de buscar esta palabra,
-                                if not articulo in articulosd: ##Almaceno el interés en los artículos
-                                    articulosd[articulo] = 0.1 / (int((datetime.now().date()-busqueda.time).days) + 1) ##Que el artículo reciba una búsqueda aumenta (poco) el interés en él
-                                else:
-                                    articulosd[articulo] += 0.1 / (int((datetime.now().date()-busqueda.time).days) + 1)
-                                cx = articulo.categories.all() ##obtengo sus categorías,
-                                for cat in cx: ##y por cada categoría del artículo,
-                                    if not cat in categorias_añadidas: ##si no la he añadido ya, incremento su interés
-                                        categorias[cat] += 0.5 / (int((datetime.now().date()-busqueda.time).days) + 1)
-                                        categorias_añadidas.append(cat) ##Para hacerlo una sola vez por cada categoría que resulte de la búsqueda (p. ej "laptop" no suma tantas veces como computadores en tecnología, sino una sola vez)
-                        categorias[categoria] += 1 / (int((datetime.now().date()-busqueda.time).days) + 1) ##Incremento el interés de la categoría por haber sido buscada.
-                    elif categoria: ##Si la búsqueda tuvo sólo la categoría.
+                    if categoria: ##Si la búsqueda tuvo categoría.
                         categorias[categoria] += 1 / (int((datetime.now().date()-busqueda.time).days) + 1) ##Lo único que hago es incrementar el interés de la categoría por haber sido buscada.
-                    elif palabras: ##Si la búsqueda tuvo sólo la palabra.
+                    if palabras: ##Si la búsqueda tuvo frases.
                         palabras = str(busqueda.phrase).split() ##consigo las frases, las divido en palabras.
                         for palabra in palabras: ##Por cada palabra,
                             categorias_añadidas = [] ##voy a guardar las categorías de estos objetos que ya he contado.
@@ -75,9 +64,9 @@ class AgenteGualmar(Agent): ##El Agente
                     detalles = BillDetails.objects.filter(bill=compra) ##obtengo sus detalles,
                     for detalle in detalles: ##Itero sobre todos los detalles de factura.
                         if detalle.article in articulosd:
-                            articulosd[detalle.article] -= 15 ##Disminuyo su interés en 15 (Penalización por compra)
-                        else:
-                            articulosd[detalle.article] = -15 ##Establezco su interés en -15
+                            articulosd[detalle.article] -= 5 ##Disminuyo su interés en 5 (Penalización por compra)
+                        else: ##ESTA PENALIZACIÓN ES ESTRICTAMENTE ARBITRARIA
+                            articulosd[detalle.article] = -5 ##Establezco su interés en -5
 
                 interes_usuario = { ##Ahora, construyo su elemento para el interes
                     'usuario': usuario.id,
@@ -86,7 +75,6 @@ class AgenteGualmar(Agent): ##El Agente
                     'articulos': articulosd
                 }
                 self.agent.tabla_interes.append(interes_usuario) ##Añado a la tabla de interés.
-            print(self.agent.tabla_interes)
         
         async def run(self): ##Voy a observar las nuevas búsquedas y/o clicks.
             ub = Search.objects.all().order_by('-id')[0] ##Guarda la última búsqueda (actual)
@@ -97,20 +85,19 @@ class AgenteGualmar(Agent): ##El Agente
             ## SI HAY BUSQUEDAS NUEVAS
             ##
 
-            if self.agent.ult_busqueda != ub:
-                print("Nueva(s) búsqueda(s) detectada(s). A trabajar.")
-                ultimasbusquedas = Search.objects.all().order_by('-id')
-                busquedas_guardar = []
-                for busqueda in ultimasbusquedas:
+            if self.agent.ult_busqueda != ub: ##Si detecté una nueva búsqueda...
+                ultimasbusquedas = Search.objects.all().order_by('-id') ##Organizo todas las últimas búsquedas en la BD.
+                busquedas_guardar = [] ##Creo un arreglo para saber cuáles voy a tomar en cuenta.
+                for busqueda in ultimasbusquedas: ##Itero sobre las últimas búsquedas hasta encontrar la que era mi última.
                     if busqueda == self.agent.ult_busqueda:
                         break
                     else:
-                        busquedas_guardar.append(busqueda)
-                for busqueda in busquedas_guardar:
-                    indice = int(busqueda.user.id)-1
-                    frase = busqueda.phrase
-                    categoria = busqueda.category
-                    if frase:
+                        busquedas_guardar.append(busqueda) ##Si no he encontrado esa última búsqueda, la añado al arreglo.
+                for busqueda in busquedas_guardar: ##Itero sobre el arreglo.
+                    indice = int(busqueda.user.id)-1 ##Identifico al usuario en la tabla.
+                    frase = busqueda.phrase ##Repito el mismo procedimiento de analizar la frase para añadir interés a los artículos.
+                    categoria = busqueda.category ##Y añado interés sobre la categoría, si aplicase.
+                    if frase: ##Mismo procedimiento.
                         for palabra in frase.split():
                             for articulo in (Article.objects.filter(name__contains=palabra) | Article.objects.filter(description__contains=palabra)).distinct(): 
                                 categorias_añadidas = [] 
@@ -123,16 +110,15 @@ class AgenteGualmar(Agent): ##El Agente
                                     self.agent.tabla_interes[indice]['articulos'][articulo] = 0.1 
                                 else:
                                     self.agent.tabla_interes[indice]['articulos'][articulo] += 0.1
-                    if categoria:
+                    if categoria: ##Mismo procedimiento.
                         self.agent.tabla_interes[indice]['categorias'][categoria] += 1
-                print(self.agent.tabla_interes[indice])
                 self.agent.ult_busqueda = ub
             
             ##
             ## SI HAY CLICKS NUEVOS
             ##
 
-            if self.agent.ult_click != uc:
+            if self.agent.ult_click != uc: ##Funciona similar a si hay búsquedas nuevas.
                 print("Nuevo(s) click(s) detectado(s). A trabajar.")
                 ultimosclicks = ArticleClick.objects.all().order_by('-id')
                 clicks_guardar = []
@@ -148,13 +134,13 @@ class AgenteGualmar(Agent): ##El Agente
                         self.agent.tabla_interes[indice]['articulos'][articulo] = 1
                     else:
                         self.agent.tabla_interes[indice]['articulos'][articulo] += 1
-                print(self.agent.tabla_interes[indice])
                 self.agent.ult_click = uc
 
             ##
             ## SI HAY COMPRAS NUEVAS
             ##
-            if self.agent.ult_compra != uo:
+
+            if self.agent.ult_compra != uo: ##Funciona similar a los dos casos anteriores.
                 print("Nueva(s) compra(s) detectada(s). A trabajar.")
                 ultimascompras = Bill.objects.all().order_by('-id')
                 compras_guardar = []
@@ -169,13 +155,130 @@ class AgenteGualmar(Agent): ##El Agente
                     for detalle in detalles: ##Itero sobre todos los detalles de factura.
                         if detalle.article in self.agent.tabla_interes[indice]['articulos']:
                             self.agent.tabla_interes[indice]['articulos'][detalle.article] -= 15 ##Disminuyo su interés en 15 (Penalización por compra)
+                self.agent.ult_compra = uo
                 time.sleep(5)
 
+    ## 2) Comportamiento que monitorea si un usuario ha iniciado sesión y recomienda productos.
+    ## Este comportamiento NO es un behaviour, dado que el sensor realmente es una señal
+    ## emitida por Django. Al iniciar sesión por primera vez en un día, se ejecuta.
+
+    def loginprimeravez(self, user):
+        carrito = ShoppingCart.objects.filter(user=user,sponsored=True).delete() ##Borro los carritos patrocinados del pasado.
+        categorias = self.tabla_interes[int(user.id)-1]['categorias'] ##Obtengo las categorías de interés del usuario.
+        articulos = self.tabla_interes[int(user.id)-1]['articulos'] ##Obtengo los artículos de interés del usuario.
+        categorias_max_interes = [] ##Debemos guardar las categorías de mayor interés del usuario.
+        articulos_max_interes = [] ##Ídem, con los artículos
+        for categoria in categorias:
+            if categorias[categoria] >= 10: ##El número 10 para denotar interés es enteramente arbitrario.
+                categorias_max_interes.append((categoria, categorias[categoria])) ##Añado a la lista.
+        for articulo in articulos:
+            if articulos[articulo] >= 5: ##Misma idea, el número 5 es estrictamente arbitrario.
+                articulos_max_interes.append((articulo, articulos[articulo])) ##Añado a la lista.
+        dos_cat_max_int = [] ##Necesito (máximo) dos categorías de máximo interés.
+        dos_art_max_int = [] ##Necesito (máximo) dos artículos de máximo interés.
+
+        ##SOBRE LAS CATEGORIAS:
+
+        if len(categorias_max_interes) <= 2: ##Si tengo 2 categorías o menos, listo.
+            for categoria in categorias_max_interes:
+                dos_cat_max_int.append(categoria[0]) ##Las añado como sea.
+        else: ##De lo contrario, necesito el mayor y el segundo mayor.
+            cats = [] ##Las categorías.
+            ints = [] ##Sus intereses.
+            for categoria in categorias_max_interes: ##Pueblo las listas de categorías e intereses.
+                cats.append(categoria[0])
+                ints.append(categoria[1])
+            indice = ints.index(max(ints)) ##El índice del mayor interés.
+            dos_cat_max_int.append(cats[indice]) ##Es también el índice de la categoría.
+            cats.pop(indice) ##Remuevo la categoría.
+            ints.pop(indice) ##Remuevo su interés. (Para hallar el segundo mayor)
+            indice = ints.index(max(ints)) ##Repito el procedimiento para el segundo mayor.
+            dos_cat_max_int.append(cats[indice]) ##Listo.
+        
+        ##SOBRE LOS ARTICULOS:
+
+        if len(articulos_max_interes) <= 2:
+            for articulo in articulos_max_interes:
+                dos_art_max_int.append(articulo[0])
+        else:
+            arts = [] ##Los artículos.
+            ints = [] ##Sus intereses.
+            for artiulo in articulos_max_interes: ##Pueblo las listas de artículos e intereses.
+                arts.append(artiulo[0])
+                ints.append(artiulo[1])
+            indice = ints.index(max(ints)) ##El índice del mayor interés.
+            dos_art_max_int.append(arts[indice]) ##Es también el índice del artículo.
+            arts.pop(indice) ##Remuevo el artículo.
+            ints.pop(indice) ##Remuevo su interés. (Para hallar el segundo mayor)
+            indice = ints.index(max(ints)) ##Repito el procedimiento para el segundo mayor.
+            dos_art_max_int.append(arts[indice]) ##Listo.     
+
+        ##CREO LOS ARTICULOS:
+
+        carrito_actual = ShoppingCart.objects.filter(user=user) ##Para ingresar en los artículos, debo cuidar el carrito.
+        articulos_actuales = [] ##Para eso, guardo los ítems del carrito en una lista.
+
+        for articulo in carrito_actual: 
+            articulos_actuales.append(articulo.article)
+
+        for articulo in dos_art_max_int: ##Monto en el carrito de compras todos los artículos.
+            if articulo not in articulos_actuales: ##Lo cargo sólo si el artículo no está ya en el carrito.
+                nvo_carrito = ShoppingCart()
+                nvo_carrito.user = user
+                nvo_carrito.article = articulo
+                nvo_carrito.quantity = 1
+                nvo_carrito.amount = articulo.price
+                nvo_carrito.sponsored = True
+                nvo_carrito.status = 'a'
+                nvo_carrito.save() ##Creación del artículo en el carrito normal.
+
+        ##Caso de las categorías.
+
+        articulos_ingresar_categoria = [] ##En este caso, voy a crear una lista con los artículos que ingresaré.
+
+        for categoria in dos_cat_max_int: ##Esto no es tan sencillo como sólo elegir un ítem de la categoría al azar.
+            articulos_categoria = Article.objects.all() ##Como un artículo puede tener muchas categorías...
+            articulos_posibles = [] ##debo determinar los artículos que puedo tomar en consideración.
+            for articulo in articulos_categoria:
+                categorias = articulo.categories.all() ##Extraigo las categorías de cada artículo.
+                if categoria in categorias:
+                    articulos_posibles.append(articulo) ##Añado el artículo en el listado de los posibles.
+            articulos_elegir = [] ##Creo la lista de los artículos que puedo elegir,
+            articulos_interes = [] ##y sus respectivos intereses.
+            for articulo in articulos_posibles: 
+                if articulo in articulos and articulos[articulo] > 0 and articulo not in articulos_actuales:
+                    ##Esta triple condición es la que elige, a grandes rasgos.
+                    ##Primero, el usuario debe haber mostrado interés en el artículo.
+                    ##Luego, este interés no puede ser negativo (p. ej - ya lo compré)
+                    ##Y este artículo no puede estar en el carrito de compras actualmente.
+                    articulos_elegir.append(articulo) ##Lo añado a los posibles artículos.
+                    articulos_interes.append(articulos[articulo]) ##Guardo su interés.
+            if articulos_elegir: ##Y si existen artículos que cumplan estas características...
+                indice = articulos_interes.index(max(articulos_interes)) ##los cargo.
+                articulos_ingresar_categoria.append(articulos_elegir[indice]) 
+        
+        for articulo in articulos_ingresar_categoria: ##Finalmente, monto estos artículos en la BD.
+            nvo_carrito = ShoppingCart()
+            nvo_carrito.user = user
+            nvo_carrito.article = articulo
+            nvo_carrito.quantity = 1
+            nvo_carrito.amount = articulo.price
+            nvo_carrito.sponsored = True
+            nvo_carrito.status = 'a'
+            nvo_carrito.save()            
+           
     async def setup(self):
         print("Comenzando el agente {}".format(str(self.jid)))
         self.b = self.MonitorBusquedasClicks()
         self.add_behaviour(self.b)
 
+agente = AgenteGualmar("listener_agent@404.city","123456")
+
 def ArrancarAgentes():   
-    agente = AgenteGualmar("listener_agent@404.city","123456")
     agente.start()
+
+@receiver(user_logged_in)
+def user_logged_in_callback(sender, request, user, **kwargs):    
+    if (user.last_login.date()-user.last_access.date()).days != 0:
+        agente.loginprimeravez(user)
+        
