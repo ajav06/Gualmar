@@ -4,10 +4,27 @@ from datetime import datetime
 
 # Create your models here.
 
+
+class CategoryArticle(models.Model):
+    """ Modelo de Categoria por Artículo """
+    name = models.CharField(verbose_name='Nombre', max_length=100)
+    created = models.DateTimeField(verbose_name='Fecha de Creación', auto_now_add=True)
+    updated = models.DateTimeField(verbose_name='Fecha de Edición', auto_now=True)
+
+    class Meta:
+        verbose_name = 'categoría de artículo'
+        verbose_name_plural = 'categorías de artículos'
+        ordering = ['-created']
+
+    def __str__(self):
+        return '{}'.format(self.id)
+
+
 class User(AbstractUser):
     """ Modelo Extendido del Usuario """
     birth_date = models.DateField(null=True, blank=True, verbose_name = "Fecha de Nacimiento")
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name = "Número Telefonico")
+    preferences = models.ManyToManyField(CategoryArticle, verbose_name='Preferencias', related_name='preferencia')
 
     class Meta:
         verbose_name = "usuario"
@@ -33,21 +50,6 @@ class Address(models.Model):
     def __str__(self):
         return self.address
 
-
-class CategoryArticle(models.Model):
-    """ Modelo de Categoria por Artículo """
-    name = models.CharField(verbose_name='Nombre', max_length=100)
-    created = models.DateTimeField(verbose_name='Fecha de Creación', auto_now_add=True)
-    updated = models.DateTimeField(verbose_name='Fecha de Edición', auto_now=True)
-
-    class Meta:
-        verbose_name = 'categoría de artículo'
-        verbose_name_plural = 'categorías de artículos'
-        ordering = ['-created']
-
-    def __str__(self):
-        return '{}'.format(self.id)
-
 class Article(models.Model):
     """ Modelo de Artículo """
     code = models.CharField(max_length=10, primary_key=True, verbose_name="Código")
@@ -69,15 +71,11 @@ class Article(models.Model):
 
 class Search(models.Model):
     """ Modelo de Busqueda de Artículos o Categorias por Usuario """
-    id_session = models.CharField(
-        max_length=50, verbose_name="Id de la Sesión", blank=True, null=True)
-    user = models.ForeignKey(User, verbose_name="Usuario",
-                             on_delete=models.CASCADE, blank=True, null=True)
-    phrase = models.CharField(
-        max_length=50, verbose_name="Frase de Búsqueda", blank=True, null=True)
+    id_session = models.CharField(max_length=50, verbose_name="Id de la Sesión", blank=True, null=True)
+    user = models.ForeignKey(User, verbose_name="Usuario",on_delete=models.CASCADE, blank=True, null=True)
+    phrase = models.CharField(max_length=50, verbose_name="Frase de Búsqueda", blank=True, null=True)
     category = models.ForeignKey(CategoryArticle, verbose_name="Categoria de Búsqueda", on_delete=models.CASCADE, blank=True, null=True)
-    time = models.FloatField(
-        max_length=10, verbose_name="Tiempo de Búsqueda", blank=True, null=True)
+    time = models.DateField(verbose_name="Fecha de Búsqueda", blank=True, null=True, auto_now=True)
 
     class Meta:
         verbose_name = 'búsqueda de artículo'
@@ -89,6 +87,7 @@ class ShoppingCart(models.Model):
     article = models.ForeignKey(Article, verbose_name="Artículo a Comprar", on_delete=models.CASCADE)
     quantity = models.IntegerField(verbose_name="Cantidad del Artículo")
     amount = models.FloatField(max_length=30, verbose_name="Monto por Cantidad de Artículo")
+    sponsored = models.BooleanField(verbose_name="Compra patrocinada", default=False)
     TYPE_STATUS = (
         ('a', 'Activo'),
         ('c', 'Comprado'),
@@ -153,10 +152,23 @@ class BillDetails(models.Model):
     article = models.ForeignKey(Article, verbose_name="Artículo Comprado", on_delete=None)
     quantity = models.IntegerField(verbose_name="Cantidad del Artículo")
     amount = models.FloatField(max_length=30, verbose_name="Monto por Cantidad de Artículo")
+    sponsored = models.BooleanField(verbose_name="Compra patrocinada", default=False)
 
     class Meta:
         verbose_name = 'detalle de factura'
         verbose_name_plural = 'detalles de facturas'
 
+    def __str__(self):
+        return "{}".format(self.id)
+
+class ArticleClick(models.Model):
+    article = models.ForeignKey(Article, verbose_name="Id del Artículo", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name="Usuario", on_delete=models.CASCADE)
+    date = models.DateField(verbose_name="Fecha del click", auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'click a artículo'
+        verbose_name_plural = 'clicks a artículos'
+    
     def __str__(self):
         return "{}".format(self.id)

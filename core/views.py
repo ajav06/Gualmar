@@ -4,8 +4,9 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.forms import Form
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
-from .models import Article, Address, User, ShoppingCart, Bill, BillDetails, PaymentDetails
+from .models import Article, Address, User, ShoppingCart, Bill, BillDetails, PaymentDetails, ArticleClick
 import random
+from django.core import serializers
 
 from . import models
 
@@ -61,6 +62,10 @@ def obtenerarticulo(request):
         'precio' : articulo.price,
         'image' : articulo.image.url,
     }
+    click = ArticleClick()
+    click.user = request.user
+    click.article = articulo
+    click.save()
     return JsonResponse(data)
 
 def añadircarrito(request):
@@ -138,6 +143,20 @@ def pagar(request):
     except:
         return JsonResponse({'exito':False})
 
+def detallefactura(request):
+    """ Consulta el detalle de una factura """
+    id_fact = request.POST.get('id')
+    detfacturas = BillDetails.objects.filter(bill_id=id_fact)
+    df = [{}]
+    for detalle in detfacturas:
+        d = {
+            'articulo':detalle.article.name,
+            'foto':detalle.article.image.url,
+            'monto':detalle.amount
+        }
+        df.append(d)
+    return JsonResponse(df,safe=False)
+
 class ListShoppingCart(ListView):
     """ Lista de Carrito de Compra por Usuario """
     model = models.ShoppingCart
@@ -187,14 +206,18 @@ class SearchView(ListView):
         categoria = self.request.COOKIES['search-category']
         cat = int(categoria)
         if cat == -1:
-            print('NO SELECCIONASTE CATEGORIA')
             context['categories'] = models.CategoryArticle.objects.all().order_by('name')
             context['articles'] = models.Article.objects.filter(name__contains=frase) | models.Article.objects.filter(description__contains=frase)
             context['articles'] = context['articles'].distinct()
+            categorias = []
+            for article in context['articles']:
+                for categ in article.categories.all().order_by('name'):
+                    category = models.CategoryArticle.objects.get(id=categ.id)
+                    if category and category not in categorias:
+                        categorias.append(category)
+            context['categories'] = categorias
         else:
-            print('SELECCIONASTE CATEGORIA')
-            context['category'] = models.CategoryArticle.objects.get(id=categoria)
-            context['categories'] = models.CategoryArticle.objects.all().order_by('name')
+            context['categories'] = models.CategoryArticle.objects.all().filter(id=categoria).order_by('name')
             context['articles'] = models.Article.objects.filter(name__contains=frase) | models.Article.objects.filter(description__contains=frase)
             context['articles'] = context['articles'].distinct()
         return context
@@ -209,6 +232,6 @@ class purchases(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(purchases, self).get_context_data(**kwargs)
-        context['object_list'] = Bill.objects.filter(user=self.request.user.id)
+        context['object_list'] = Bill.objects.filter(user=self.request.user.id).order_by('-id')
         return context
 

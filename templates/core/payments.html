@@ -15,7 +15,7 @@
             Tarjeta de crédito
         </h4>
         <div class="one column row">
-        <form method="POST">
+        <form method="POST" id="formulario_pago">
         {% csrf_token %}
             <div class="ui content">
                 <div class="justify aligned description">
@@ -129,7 +129,7 @@
                             <a href="{% url 'cart' %}" class="ui red fluid small button" style="margin-left:50px" ><i class="ui icon arrow alternate circle left"></i>Cancelar</a>
                         </div>
                         <div class="column" style="width:150px">
-                            <a class="ui green fluid small button" style="margin-left:370px;" onclick="javascript:Pagar('tc')"><i class="ui icon handshake outline"></i>Pagar</a>
+                            <button class="ui green fluid small button" style="margin-left:370px;" type="submit"><i class="ui icon handshake outline"></i>Pagar</button>
                         </div>
                     </div>
                 </div>
