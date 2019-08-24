@@ -216,24 +216,27 @@ class AgenteGualmar(Agent): ##El Agente
 
         ##CREO LOS ARTICULOS:
 
-        for articulo in dos_art_max_int: ##Monto en el carrito de compras todos los artículos.
-            nvo_carrito = ShoppingCart()
-            nvo_carrito.user = user
-            nvo_carrito.article = articulo
-            nvo_carrito.quantity = 1
-            nvo_carrito.amount = articulo.price
-            nvo_carrito.sponsored = True
-            nvo_carrito.status = 'a'
-            nvo_carrito.save() ##Creación del artículo en el carrito normal.
-
-        ##Caso de las categorías.
-
         carrito_actual = ShoppingCart.objects.filter(user=user) ##Para ingresar en los artículos, debo cuidar el carrito.
         articulos_actuales = [] ##Para eso, guardo los ítems del carrito en una lista.
 
         for articulo in carrito_actual: 
             articulos_actuales.append(articulo.article)
 
+        for articulo in dos_art_max_int: ##Monto en el carrito de compras todos los artículos.
+            if articulo in articulos_actuales:
+                pass
+            else:
+                nvo_carrito = ShoppingCart()
+                nvo_carrito.user = user
+                nvo_carrito.article = articulo
+                nvo_carrito.quantity = 1
+                nvo_carrito.amount = articulo.price
+                nvo_carrito.sponsored = True
+                nvo_carrito.status = 'a'
+                nvo_carrito.save() ##Creación del artículo en el carrito normal.
+                articulos_actuales.append(articulo)
+
+        ##Caso de las categorías.
 
         articulos_ingresar_categoria = [] ##En este caso, voy a crear una lista con los artículos que ingresaré.
 
@@ -247,7 +250,7 @@ class AgenteGualmar(Agent): ##El Agente
             articulos_elegir = [] ##Creo la lista de los artículos que puedo elegir,
             articulos_interes = [] ##y sus respectivos intereses.
             for articulo in articulos_posibles: 
-                if articulo in articulos and articulos[articulo] > 0 and articulo not in articulos_actuales:
+                if articulo in articulos and articulos[articulo] > 2.5 and articulo not in articulos_actuales:
                     ##Esta triple condición es la que elige, a grandes rasgos.
                     ##Primero, el usuario debe haber mostrado interés en el artículo.
                     ##Luego, este interés no puede ser negativo (p. ej - ya lo compré)
@@ -259,14 +262,17 @@ class AgenteGualmar(Agent): ##El Agente
                 articulos_ingresar_categoria.append(articulos_elegir[indice]) 
         
         for articulo in articulos_ingresar_categoria: ##Finalmente, monto estos artículos en la BD.
-            nvo_carrito = ShoppingCart()
-            nvo_carrito.user = user
-            nvo_carrito.article = articulo
-            nvo_carrito.quantity = 1
-            nvo_carrito.amount = articulo.price
-            nvo_carrito.sponsored = True
-            nvo_carrito.status = 'a'
-            nvo_carrito.save()            
+            if articulo in articulos_actuales:
+                pass
+            else:
+                nvo_carrito = ShoppingCart()
+                nvo_carrito.user = user
+                nvo_carrito.article = articulo
+                nvo_carrito.quantity = 1
+                nvo_carrito.amount = articulo.price
+                nvo_carrito.sponsored = True
+                nvo_carrito.status = 'a'
+                nvo_carrito.save()            
            
     async def setup(self):
         print("Comenzando el agente {}".format(str(self.jid)))

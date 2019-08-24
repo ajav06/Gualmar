@@ -90,17 +90,25 @@ def obtenerarticulo(request):
 def añadircarrito(request):
     """ Función que añade un artículo al carrito
         de compras de un usuario """
-    codigoart = request.POST.get('codigo', None)
-    if not codigoart:
-        codigoart = 1
-    articulo = Article.objects.get(code=codigoart)
-    user = request.user    
-    sc = ShoppingCart()
-    sc.user = user
-    sc.article = articulo
-    sc.quantity = 1
-    sc.amount = articulo.price
     try:
+        codigoart = request.POST.get('codigo', None)
+        articulo = Article.objects.get(code=codigoart)
+        user = request.user    
+        carrito = None
+        try:
+            carrito = ShoppingCart.objects.get(user=user,article=articulo)
+        except:
+            pass
+        if carrito:
+            carrito.quantity += 1
+            carrito.amount = carrito.quantity * articulo.price
+            carrito.save()
+            return JsonResponse({'exito':True})
+        sc = ShoppingCart()
+        sc.user = user
+        sc.article = articulo
+        sc.quantity = 1
+        sc.amount = articulo.price
         sc.save()
         return JsonResponse({'exito':True})
     except:
@@ -179,11 +187,8 @@ def detallefactura(request):
 recomiendame = django.dispatch.Signal(providing_args=['user'])
 
 def recomendaciones(request):
-    try:
-        recomiendame.send(sender=None, user=request.user)
-        return JsonResponse({'exito':True})
-    except:
-        return JsonResponse({'exito':False})
+    recomiendame.send(sender=None, user=request.user)
+    return JsonResponse({'exito':True})
 
 def limpiarcarrito(request):
     try:
