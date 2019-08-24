@@ -20,6 +20,8 @@ urlpatterns = [
     path('dashboard/ajax/addarticle/', views.añadircarrito, name='añadircarrito'),
     path('cart/ajax/getarticle/', views.obtenerarticulo, name='obtenerarticulo'),
     path('cart/ajax/removearticle/', views.eliminarcarrito, name='eliminarcarrito'),
+    path('cart/ajax/recomendaciones/', views.recomendaciones, name='recomendaciones'),
+    path('cart/ajax/limpiar/', views.limpiarcarrito, name='limpiarcarrito'),
     path('search/ajax/getarticle/', views.obtenerarticulo, name='obtenerarticuloS'),
     path('search/ajax/addarticle/', views.añadircarrito, name='añadircarritoS'),
 ]

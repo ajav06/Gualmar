@@ -10,6 +10,7 @@ from django.core import serializers
 from django.shortcuts import redirect
 from datetime import datetime
 import time
+import django.dispatch
 
 from . import models
 
@@ -174,6 +175,22 @@ def detallefactura(request):
         }
         df.append(d)
     return JsonResponse(df,safe=False)
+
+recomiendame = django.dispatch.Signal(providing_args=['user'])
+
+def recomendaciones(request):
+    try:
+        recomiendame.send(sender=None, user=request.user)
+        return JsonResponse({'exito':True})
+    except:
+        return JsonResponse({'exito':False})
+
+def limpiarcarrito(request):
+    try:
+        ShoppingCart.objects.filter(user=request.user).delete()
+        return JsonResponse({'exito':True})
+    except:
+        return JsonResponse({'exito':False})
 
 class ListShoppingCart(ListView):
     """ Lista de Carrito de Compra por Usuario """

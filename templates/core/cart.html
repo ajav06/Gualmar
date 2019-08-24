@@ -12,7 +12,7 @@
 
   <div class="ui content segment" style="background-color:#cbbede;">
     <div class="ui very relaxed large divided selection list">
-    <div class="ui header" style="margin-left:10px">Mi Carrito de Compras</div>
+    <div class="ui header" style="margin-left:10px">Mi Carrito de Compras<a class="ui orange button right floated" onclick="javascript:Recomendar();"><i class="ui icon rocket"></i>IA</a><a class="ui red button right floated" onclick="javascript:Limpiar();"><i class="ui icon trash alternate" style="padding-left:7px"></i></a></div>
     {% csrf_token %}
         {% for cart in carts %}
            <div class="middle aligned item" >
@@ -41,10 +41,10 @@
 </div>
 
 {% else %}
-
+{% csrf_token %}
 <div class="ui content segment" style="background-color:#cbbede;">
   <div class="ui header centered" style="margin-top:10px;margin-bottom:15px;">
-    No hay ítems en tu carrito de compras.<br />
+    No hay ítems en tu carrito de compras.<br /><a class="ui big orange button" onclick="javascript:Recomendar();"><i class="ui icon rocket"></i>IA</a>
     <a href="{% url 'dashboard' %}" class="ui big teal button" style="margin-top:1em;"><i
         class="ui icon arrow alternate circle left"></i>Volver</a>
   </div>

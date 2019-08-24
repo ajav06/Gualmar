@@ -10,6 +10,7 @@ from datetime import datetime
 from django.core.signals import request_finished
 from django.dispatch import receiver
 from django.contrib.auth.signals import user_logged_in
+from core.views import recomiendame
 
 class AgenteGualmar(Agent): ##El Agente
     ult_busqueda = Search.objects.all().order_by('-id')[0] ##Guarda la última búsqueda
@@ -215,24 +216,24 @@ class AgenteGualmar(Agent): ##El Agente
 
         ##CREO LOS ARTICULOS:
 
+        for articulo in dos_art_max_int: ##Monto en el carrito de compras todos los artículos.
+            nvo_carrito = ShoppingCart()
+            nvo_carrito.user = user
+            nvo_carrito.article = articulo
+            nvo_carrito.quantity = 1
+            nvo_carrito.amount = articulo.price
+            nvo_carrito.sponsored = True
+            nvo_carrito.status = 'a'
+            nvo_carrito.save() ##Creación del artículo en el carrito normal.
+
+        ##Caso de las categorías.
+
         carrito_actual = ShoppingCart.objects.filter(user=user) ##Para ingresar en los artículos, debo cuidar el carrito.
         articulos_actuales = [] ##Para eso, guardo los ítems del carrito en una lista.
 
         for articulo in carrito_actual: 
             articulos_actuales.append(articulo.article)
 
-        for articulo in dos_art_max_int: ##Monto en el carrito de compras todos los artículos.
-            if articulo not in articulos_actuales: ##Lo cargo sólo si el artículo no está ya en el carrito.
-                nvo_carrito = ShoppingCart()
-                nvo_carrito.user = user
-                nvo_carrito.article = articulo
-                nvo_carrito.quantity = 1
-                nvo_carrito.amount = articulo.price
-                nvo_carrito.sponsored = True
-                nvo_carrito.status = 'a'
-                nvo_carrito.save() ##Creación del artículo en el carrito normal.
-
-        ##Caso de las categorías.
 
         articulos_ingresar_categoria = [] ##En este caso, voy a crear una lista con los artículos que ingresaré.
 
@@ -282,3 +283,6 @@ def user_logged_in_callback(sender, request, user, **kwargs):
     if (user.last_login.date()-user.last_access.date()).days != 0:
         agente.loginprimeravez(user)
         
+@receiver(recomiendame)
+def recomendar_usuario(user, **kwargs):
+    agente.loginprimeravez(user)
