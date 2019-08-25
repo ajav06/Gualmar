@@ -37,7 +37,6 @@ class AgenteGualmar(Agent): ##El Agente
     class MonitorBusquedasClicks(CyclicBehaviour):
         async def on_start(self): ##Cuando se ejecuta, quiero que inicialice la tabla.
             for usuario in User.objects.all().order_by('id'): ##Por cada usuario, realiza lo siguiente:
-                self.agent.last_logins.append(usuario.last_login) ##Guardo su último login.
                 categorias = dict() ##Crea un diccionario que guardará las categorías.
                 articulosd = dict() ##Crea un diccionario que guardará los artículos.
                 for categoria in CategoryArticle.objects.all(): ##Carga el diccionario con las categorías,
