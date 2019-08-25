@@ -319,7 +319,7 @@ class AgenteGualmar(Agent): ##El Agente
 
 ##Instanciación del agente.
 
-agente = AgenteGualmar("listener_agent@404.city","123456")
+agente = AgenteGualmar("gualmar@404.city","123456")
 
 def ArrancarAgentes():   
     agente.start()
