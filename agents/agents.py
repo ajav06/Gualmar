@@ -298,7 +298,7 @@ class AgenteGualmar(Agent): ##El Agente
     ##De los artículos en los que el usuario ha mostrado interés, elige aleatoriamente
     ##4 de ellos y los muestra en el dashboard.
 
-    def categoria_recomendados(user): 
+    def categoria_recomendados(self, user): 
         indice = int(user.id)-1 ##Obtengo el índice del usuario.
         interes_usuario = self.tabla_interes[indice] ##Y su tabla de interés.
         articulos_interes = [] ##Monto una lista con los artículos en los que el usuario ha mostrado interés...
