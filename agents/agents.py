@@ -89,9 +89,16 @@ class AgenteGualmar(Agent): ##El Agente
                 self.agent.tabla_interes.append(interes_usuario) ##Añado a la tabla de interés.
         
         async def run(self): ##Voy a observar las nuevas búsquedas y/o clicks.
-            ub = Search.objects.all().order_by('-id')[0] ##Guarda la última búsqueda (actual)
-            uc = ArticleClick.objects.all().order_by('-id')[0] ##Guarda el último click (actual)
-            uo = Bill.objects.all().order_by('-id')[0] ##Guarda la última compra.
+            ub = None
+            uc = None
+            uo = None
+
+            try:
+                ub = Search.objects.all().order_by('-id')[0] ##Guarda la última búsqueda (actual)
+                uc = ArticleClick.objects.all().order_by('-id')[0] ##Guarda el último click (actual)
+                uo = Bill.objects.all().order_by('-id')[0] ##Guarda la última compra.
+            except:
+                pass
 
             ##
             ## SI HAY BUSQUEDAS NUEVAS
