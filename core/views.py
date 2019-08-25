@@ -204,6 +204,7 @@ class SearchView(ListView):
         context = super().get_context_data(**kwargs)
         frase = self.request.COOKIES['search-phrase']
         categoria = self.request.COOKIES['search-category']
+        context['fra'] = frase
         cat = int(categoria)
         if cat == -1:
             context['categories'] = models.CategoryArticle.objects.all().order_by('name')
@@ -217,11 +218,17 @@ class SearchView(ListView):
                         categorias.append(category)
             context['categories'] = categorias
         else:
+            context['cat'] = models.CategoryArticle.objects.filter(id=categoria)[0]
             context['categories'] = models.CategoryArticle.objects.all().filter(id=categoria).order_by('name')
             context['articles'] = models.Article.objects.filter(name__contains=frase) | models.Article.objects.filter(description__contains=frase)
             context['articles'] = context['articles'].distinct()
+        context['si'] = False
+        for articulo in context['articles']:
+            for category in articulo.categories.all():
+                if category in context['categories']:
+                    context['si'] = True
+                    break
         return context
-    
         
 def payments(request):
     return render(request, 'core/payments.html', {})

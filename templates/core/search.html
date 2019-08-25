@@ -11,51 +11,63 @@
 
 <div class="ui grid" style="margin-right:2px;margin-left:2px;">
     <div class="row">
-    <a href="{% url 'dashboard' %}" class="ui large teal left floated button"
-        style="margin-left:15px;margin-top:10px;"><i class="ui icon arrow alternate circle left"></i>Volver</a>
+        <a href="{% url 'dashboard' %}" class="ui large teal left floated button"
+            style="margin-left:15px;margin-top:10px;"><i class="ui icon arrow alternate circle left"></i>Volver</a>
+    </div>
+    <div class="centered row">
+    {% if fra %}
+       <h2> Mostrando resultados de buscar "{{fra}}"</h2>
+    {% endif %}
     </div>
     <br><br>
     {% csrf_token %}
+    {% if si %}
     {% if categories %}
     {% for category in categories %}
-    <div class="row">
-    <div class="ui segment" style="background-color:#cbbede;">
-        <h3><b>{{category.name}}</b></h3><br>
-        <div class="ui equal width grid">
-            <div class="ui four link cards">
-                {% for article in articles %}
-                {% for articleCategory in article.categories.all %}
-                {% ifequal articleCategory.id category.id %}
-                <div class="ui card" style="background-color:#c4fcd1;"
-                    onclick="javascript:Consultar({{ article.code }});">
-                    <div class="content">
-                        <div class="ui grid">
-                            <div class="four wide column ui circular fluid middle aligned image">
-                                <img src="{{article.image.url}}" style="object-fit:cover;">
-                            </div>
-                            <div class="twelve wide column">
-                                <div class="ui header">{{article.name}}</div>
-                                <p>{{article.description|truncatewords:10}}</p>
-                                <p><b>Precio:</b> ${{article.price}}</p>
+    <div class="fluid row">
+        <div class="ui fluid segment" style="background-color:#cbbede;">
+            <h3><b>{{category.name}}</b></h3><br>
+            <div class="ui equal width grid">
+                <div class="ui four link cards">
+                    {% for article in articles %}
+                    {% for articleCategory in article.categories.all %}
+                    {% ifequal articleCategory.id category.id %}
+                    <div class="ui card" style="background-color:#c4fcd1;"
+                        onclick="javascript:Consultar({{ article.code }});">
+                        <div class="content">
+                            <div class="ui grid">
+                                <div class="four wide column ui circular fluid middle aligned image">
+                                    <img src="{{article.image.url}}" style="object-fit:cover;">
+                                </div>
+                                <div class="twelve wide column">
+                                    <div class="ui header">{{article.name}}</div>
+                                    <p>{{article.description|truncatewords:10}}</p>
+                                    <p><b>Precio:</b> ${{article.price}}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    {% endifequal %}
+                    {% endfor %}
+                    {% endfor %}
+                    <!--Aqui otros-->
                 </div>
-
-                {% endifequal %}
-                {% endfor %}
-                {% endfor %}
-                <!--Aqui otros-->
-            </div>
-        </div><br><br>
-    </div>
+            </div><br><br>
+        </div>
     </div>
     {% endfor %}
     {% else %}
     <div class="centered row">
-    <div class="ui fluid segment" style="background-color:#cbbede;">
-        <h2>No hay artículos con ese nombre.</h2>
+        <div class="ui fluid segment" style="background-color:#cbbede;">
+            <h2>¡Uy! No hay artículos con ese nombre.</h2>
+        </div>
     </div>
+    {% endif %}
+    {% else %}
+    <div class="centered row">
+        <div class="ui fluid segment" style="background-color:#cbbede;">
+            <h2>¡Uy! No hay artículos con ese nombre{% if cat %} en la categoría {{cat.name}}{% endif %}.</h2>
+        </div>
     </div>
     {% endif %}
 </div>
