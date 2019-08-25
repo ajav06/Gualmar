@@ -2,17 +2,16 @@ from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from django.views.generic import TemplateView
 from . import views
-from .views import profile
 
 urlpatterns = [
     path('', views.login.as_view(), name="login"),
     path('checker/', views.dashboard_checker, name="checker"),
     path('logout/', views.logout.as_view(), name="logout"),
     path('dashboard/', views.DashboardViews.as_view(), name="dashboard"),
-    path('profile/', profile.as_view(template_name='core/profile.html'), name="profile"),
+    path('profile/', views.profile.as_view(template_name='core/profile.html'), name="profile"),
     path('cart/', views.ListShoppingCart.as_view(), name="cart"),
     path('search/', views.SearchView.as_view(), name="search"),
-    path('payments/', TemplateView(template_name='core/payments.html'), name="payments"),
+    path('payments/', views.payments.as_view(), name="payments"),
     path('purchases/', views.purchases.as_view(), name="purchases"),
     path('payments/ajax/pay/', views.AjaxViews.pagar, name='pagar'),
     path('purchases/ajax/detail/', views.AjaxViews.detallefactura, name='detfact'),

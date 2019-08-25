@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, TemplateView
 from django.forms import Form
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
@@ -237,6 +237,10 @@ class profile(DetailView):
         context = super(profile, self).get_context_data(**kwargs)
         context['direccion'] = Address.objects.get(user = self.request.user.id)
         return context
+
+class payments(TemplateView):
+    template_name = "core/payments.html"
+    
 
 class SearchView(ListView):
     """ Página de Búsqueda """ 
