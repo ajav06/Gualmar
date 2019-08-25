@@ -293,37 +293,50 @@ class AgenteGualmar(Agent): ##El Agente
                 nvo_carrito.status = 'a'
                 nvo_carrito.save()      
 
-    def categoria_recomendados(self, user):
-        indice = int(user.id)-1
-        interes_usuario = self.tabla_interes[indice]
-        articulos_interes = []
-        for articulo in interes_usuario['articulos']:
-            if interes_usuario['articulos'][articulo] > 1:
+    ##
+    ##3) GENERA CATEGORÍA "RECOMENDADOS"
+    ##De los artículos en los que el usuario ha mostrado interés, elige aleatoriamente
+    ##4 de ellos y los muestra en el dashboard.
+
+    def categoria_recomendados(self, user): 
+        indice = int(user.id)-1 ##Obtengo el índice del usuario.
+        interes_usuario = self.tabla_interes[indice] ##Y su tabla de interés.
+        articulos_interes = [] ##Monto una lista con los artículos en los que el usuario ha mostrado interés...
+        for articulo in interes_usuario['articulos']: 
+            if interes_usuario['articulos'][articulo] > 1: ##Interés mayor a 1. Número arbitrario.
                 articulos_interes.append(articulo)
-        if len(articulos_interes)<=4:
+        if len(articulos_interes)<=4: ##Si son menos de 4 artículos en total, los recomiendo todos
             DashboardViews.recomendados = articulos_interes
-        else:
+        else: ##En caso contrario, elijo al azar 4 artículos.
             DashboardViews.recomendados = random.sample(articulos_interes, k=4)
+
+    ##Método que configura el agente.
            
     async def setup(self):
         print("Comenzando el agente {}".format(str(self.jid)))
         self.b = self.MonitorBusquedasClicks()
         self.add_behaviour(self.b)
 
-agente = AgenteGualmar("listener_agent@404.city","123456")
+##Instanciación del agente.
+
+agente = AgenteGualmar("gualmar@404.city","123456")
 
 def ArrancarAgentes():   
     agente.start()
 
-@receiver(user_logged_in)
-def user_logged_in_callback(sender, request, user, **kwargs):    
-    if (user.last_login.date()-user.last_access.date()).days != 0:
-        agente.loginprimeravez(user)
-        
-@receiver(recomiendame)
-def recomendar_usuario(user, **kwargs):
-    agente.loginprimeravez(user)
+##Sensores.
+##Acá van los métodos sensores, que reciben las señales que emite Django
+##e instan al agente a realizar la acción acorde a cada señal. 
 
-@receiver(dashboard)
+@receiver(user_logged_in) ##Cuando el usuario inicia sesión,
+def user_logged_in_callback(sender, request, user, **kwargs):    
+    if (user.last_login.date()-user.last_access.date()).days != 0: ##si tiene más de un día sin entrar
+        agente.loginprimeravez(user) ##le recomienda artículos.
+        
+@receiver(recomiendame) ##Cuando el usuario solicita que le recomienden artículos,
+def recomendar_usuario(user, **kwargs): 
+    agente.loginprimeravez(user) ##es el mismo procedimiento que en loginprimeravez.
+
+@receiver(dashboard) ##Cuando el usuario abre el dashboard,
 def categoria_recomendados(user, **kwargs):
-    agente.categoria_recomendados(user)
+    agente.categoria_recomendados(user) ##se generan sus recomendaciones aleatorias personalizadas.
