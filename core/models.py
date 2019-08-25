@@ -4,7 +4,6 @@ from datetime import datetime
 
 # Create your models here.
 
-
 class CategoryArticle(models.Model):
     """ Modelo de Categoria por Artículo """
     name = models.CharField(verbose_name='Nombre', max_length=100)
@@ -25,6 +24,7 @@ class User(AbstractUser):
     birth_date = models.DateField(null=True, blank=True, verbose_name = "Fecha de Nacimiento")
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name = "Número Telefonico")
     preferences = models.ManyToManyField(CategoryArticle, verbose_name='Preferencias', related_name='preferencia')
+    last_access = models.DateTimeField(default=datetime.now())
 
     class Meta:
         verbose_name = "usuario"

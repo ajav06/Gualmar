@@ -127,7 +127,7 @@ function EliminarItemCarrito(codigo) {
                 dataType: 'json',
                 success: function(data) {
                     if (data['exito'] == true) {
-                        Swal.fire('Eliminado con éxito');
+                        Swal.fire('Éxito en la eliminación', 'El ítem ha sido removido de tu carrito con éxito.', 'success');
                         setTimeout(function() {
                             window.location.reload(false);
                         }, 500);
@@ -220,4 +220,86 @@ function VerDetFact(id) {
         }
     })
     $('#dimmer').removeClass('active');
-}
+};
+
+function Recomendar() {
+    Swal.fire({
+        title: 'Sugerencia de Ítems por IA',
+        text: "Esta opción te permite obtener recomendaciones personalizadas para que compres basados en tu actividad. ¿Seguro que deseas recibir recomendaciones ahorita mismo?",
+        type: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Confirmar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.value) {
+            var token = $('input[name="csrfmiddlewaretoken"]').val();
+            $.ajax({
+                url: 'ajax/recomendaciones/',
+                type: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': token
+                },
+                dataType: 'json',
+                success: function(data) {
+                    if (data['exito'] == true) {
+                        Swal.fire({
+                            title: 'Recomendaciones solicitadas con éxito.',
+                            text: 'Hemos solicitado las recomendaciones a nuestro agente inteligente. Recargando...',
+                            type: 'success',
+                            showConfirmButton: false,
+                            showCancelButton: false
+                        });
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        Swal.fire('Error solicitando las recomendaciones. Quizás nuestro agente no es tan inteligente...');
+                    }
+                }
+            })
+        }
+    })
+};
+
+function Limpiar() {
+    Swal.fire({
+        title: 'Limpiar Carrito',
+        text: "¿Estás seguro que deseas limpiar el carrito?",
+        type: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Confirmar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.value) {
+            var token = $('input[name="csrfmiddlewaretoken"]').val();
+            $.ajax({
+                url: 'ajax/limpiar/',
+                type: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': token
+                },
+                dataType: 'json',
+                success: function(data) {
+                    if (data['exito'] == true) {
+                        Swal.fire({
+                            title: 'Carrito limpiado con éxito.',
+                            text: 'Hemos limpiado tu carrito con éxito. Recargando...',
+                            type: 'success',
+                            showConfirmButton: false,
+                            showCancelButton: false
+                        });
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        Swal.fire('Error limpiando el carrito.');
+                    }
+                }
+            })
+        }
+    })
+};
