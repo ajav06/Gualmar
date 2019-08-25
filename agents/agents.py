@@ -10,14 +10,26 @@ from datetime import datetime
 from django.core.signals import request_finished
 from django.dispatch import receiver
 from django.contrib.auth.signals import user_logged_in
-from core.views import recomiendame
+from core.views import recomiendame, dashboard, DashboardViews
+import random
 
 class AgenteGualmar(Agent): ##El Agente
-    ult_busqueda = Search.objects.all().order_by('-id')[0] ##Guarda la última búsqueda
-    ult_click = ArticleClick.objects.all().order_by('-id')[0] ##Guarda el último click
-    ult_compra = Bill.objects.all().order_by('-id')[0] ##Guarda la última factura al momento de iniciar el servidor
+    ult_busqueda = Search.objects.all().order_by('-id')
+    if ult_busqueda:
+        ult_busqueda = Search.objects.all().order_by('-id')[0] ##Guarda la última búsqueda
+    else:
+        ult_busqueda = None
+    ult_click = ArticleClick.objects.all().order_by('-id')
+    if ult_click:
+        ult_click = ArticleClick.objects.all().order_by('-id')[0] ##Guarda el último click
+    else:
+        ult_click = None
+    ult_compra = Bill.objects.all().order_by('-id') ##Guarda la última factura al momento de iniciar el servidor
+    if ult_compra:
+        ult_compra = Bill.objects.all().order_by('-id')[0]
+    else:
+        ult_compra = None
     tabla_interes = [] ##Instancia una tabla de interés, vacía, que luego llenará con datos de cada usuario
-    last_logins = [] ##Instancia una tabla con los últimos login de cada usuario.
 
     ## COMPORTAMIENTOS
     ## 1) Comportamiento que inicializa la tabla y que monitorea nuevas búsquedas/clicks.
@@ -159,9 +171,10 @@ class AgenteGualmar(Agent): ##El Agente
                 self.agent.ult_compra = uo
                 time.sleep(5)
 
-    ## 2) Comportamiento que monitorea si un usuario ha iniciado sesión y recomienda productos.
+    ## 2) Comportamiento que recomienda productos.
     ## Este comportamiento NO es un behaviour, dado que el sensor realmente es una señal
     ## emitida por Django. Al iniciar sesión por primera vez en un día, se ejecuta.
+    ## También se ejecuta cada vez que el usuario da click al botón IA.
 
     def loginprimeravez(self, user):
         carrito = ShoppingCart.objects.filter(user=user,sponsored=True).delete() ##Borro los carritos patrocinados del pasado.
@@ -272,7 +285,19 @@ class AgenteGualmar(Agent): ##El Agente
                 nvo_carrito.amount = articulo.price
                 nvo_carrito.sponsored = True
                 nvo_carrito.status = 'a'
-                nvo_carrito.save()            
+                nvo_carrito.save()      
+
+    def categoria_recomendados(self, user):
+        indice = int(user.id)-1
+        interes_usuario = self.tabla_interes[indice]
+        articulos_interes = []
+        for articulo in interes_usuario['articulos']:
+            if interes_usuario['articulos'][articulo] > 1:
+                articulos_interes.append(articulo)
+        if len(articulos_interes)<=4:
+            DashboardViews.recomendados = articulos_interes
+        else:
+            DashboardViews.recomendados = random.sample(articulos_interes, k=4)
            
     async def setup(self):
         print("Comenzando el agente {}".format(str(self.jid)))
@@ -292,3 +317,7 @@ def user_logged_in_callback(sender, request, user, **kwargs):
 @receiver(recomiendame)
 def recomendar_usuario(user, **kwargs):
     agente.loginprimeravez(user)
+
+@receiver(dashboard)
+def categoria_recomendados(user, **kwargs):
+    agente.categoria_recomendados(user)

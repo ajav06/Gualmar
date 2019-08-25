@@ -40,16 +40,14 @@
     </form>
 </div>
 
+{% if recomendados %}
 <div class="ui grid" style="margin-right:2px;margin-left:2px;">
     {% csrf_token %}
-    {% if category %}
     <div class="ui segment" style="background-color:#cbbede;">
-        <h3><b>{{category.name}}</b></h3><br>
+        <h3><b>Recomendaciones para ti <a class="ui tiny orange button" style="margin-left:10px;"><i class="ui icon rocket" style="padding-left:5px;"></i></a><a class="ui small green button right floated" style="padding-right:10px" onclick="javascript:window.location.reload();"><i class="ui icon redo"></i></a></b></h3><br>
         <div class="ui equal width grid">
             <div class="ui four link cards">
-                {% for article in articles %}
-                {% for articleCategory in article.categories.all %}
-                {% ifequal articleCategory.id category.id %}
+                {% for article in recomendados %}
                 <div class="ui card" style="background-color:#c4fcd1;"
                     onclick="javascript:Consultar({{ article.code }});">
                     <div class="content">
@@ -65,14 +63,13 @@
                         </div>
                     </div>
                 </div>
-                {% endifequal %}
-                {% endfor %}
-                {% endfor %}
                 <!--Aqui otros-->
+                {% endfor %}
             </div>
         </div><br><br>
     </div>
-    {% else %}
+{% endif %}
+
     {% for category in categories %}
     <div class="ui segment" style="background-color:#cbbede;">
         <h3><b>{{category.name}}</b></h3><br>
@@ -104,6 +101,5 @@
         </div><br><br>
     </div>
     {% endfor %}
-    {% endif %}
 </div>
 {% endblock %}

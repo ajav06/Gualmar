@@ -16,11 +16,143 @@ from . import models
 
 # Create your views here.
 
+recomiendame = django.dispatch.Signal(providing_args=['user'])
+dashboard = django.dispatch.Signal(providing_args=['user'])
+
 class LastAccessMixin(object):
     def dispatch(self, request, *args, **kwargs):
         request.user.last_access = datetime.now()
         request.user.save(update_fields=['last_access'])
         return super(LastAccessMixin, self).dispatch(request, *args, **kwargs)
+
+class AjaxViews():
+    def obtenerarticulo(request):
+        """ Función para mostrar información 
+            de un Artículo en una modal """
+        codigo = request.POST.get('codigo', None)
+        if codigo:
+            articulo = Article.objects.get(code=codigo)
+        else:
+            articulo = Article.objects.get(code=1)
+        data = {
+            'nombre' : articulo.name,
+            'descripcion' : articulo.description,
+            'precio' : articulo.price,
+            'image' : articulo.image.url,
+        }
+        click = ArticleClick()
+        click.user = request.user
+        click.article = articulo
+        click.save()
+        return JsonResponse(data)
+
+    def añadircarrito(request):
+        """ Función que añade un artículo al carrito
+            de compras de un usuario """
+        try:
+            codigoart = request.POST.get('codigo', None)
+            articulo = Article.objects.get(code=codigoart)
+            user = request.user    
+            carrito = None
+            try:
+                carrito = ShoppingCart.objects.get(user=user,article=articulo)
+            except:
+                pass
+            if carrito:
+                carrito.quantity += 1
+                carrito.amount = carrito.quantity * articulo.price
+                carrito.save()
+                return JsonResponse({'exito':True})
+            sc = ShoppingCart()
+            sc.user = user
+            sc.article = articulo
+            sc.quantity = 1
+            sc.amount = articulo.price
+            sc.save()
+            return JsonResponse({'exito':True})
+        except:
+            return JsonResponse({'exito':False})
+
+    def eliminarcarrito(request):
+        """ Función que elimina un item del
+            carrito de compras """
+        try:
+            codigocarrito = request.POST.get('codigo', None)
+            if not codigocarrito:
+                codigocarrito = 1
+            carrito = ShoppingCart.objects.get(id = codigocarrito)
+            carrito.delete()
+            return JsonResponse({'exito':True})
+        except:
+            return JsonResponse({'exito':False})
+
+    def pagar(request):
+        """ Función que simula el pago """
+        try:
+            usuario = request.user
+            #Primero, cargo sus artículos del carrito de compras
+            carrito = ShoppingCart.objects.filter(user=usuario)
+            #Calculo el monto total a pagar
+            monto = 0
+            for articulo in carrito:
+                monto += articulo.amount
+            monto = round(monto,2)
+            #Luego, el tipo de pago (quiero crear la factura)
+            tipo_pago = request.POST.get('tipo', None)
+            #Creo el detalle de pago:
+            dp = PaymentDetails()
+            dp.user = usuario
+            dp.payment_type = tipo_pago
+            dp.transaction_code = str(random.randrange(0,99999999)).zfill(8)
+            dp.status = 'e'
+            dp.save()
+            #Creo la factura:
+            factura = Bill()
+            factura.user = usuario
+            factura.amount = monto
+            factura.address = Address.objects.get(user=usuario)
+            factura.status = 'a'
+            factura.payment = dp
+            factura.save()
+            #Creo los detalle de factura
+            for articulo in carrito:
+                detfact = BillDetails()
+                detfact.bill = factura
+                detfact.article = articulo.article
+                detfact.quantity = articulo.quantity
+                detfact.amount = articulo.amount
+                detfact.save()
+            #Limpio el carrito
+            carrito.delete()        
+            #Listo. Devuelvo que el pago fue exitoso
+            return JsonResponse({'exito':True})
+        except:
+            return JsonResponse({'exito':False})
+
+    def detallefactura(request):
+        """ Consulta el detalle de una factura """
+        id_fact = request.POST.get('id')
+        detfacturas = BillDetails.objects.filter(bill_id=id_fact)
+        df = [{}]
+        for detalle in detfacturas:
+            d = {
+                'articulo':detalle.article.name,
+                'foto':detalle.article.image.url,
+                'monto':detalle.amount
+            }
+            df.append(d)
+        return JsonResponse(df,safe=False)
+
+    def recomendaciones(request):
+        recomiendame.send(sender=None, user=request.user)
+        return JsonResponse({'exito':True})
+
+    def limpiarcarrito(request):
+        try:
+            ShoppingCart.objects.filter(user=request.user).delete()
+            return JsonResponse({'exito':True})
+        except:
+            return JsonResponse({'exito':False})
 
 def dashboard_checker(request):
     if (request.user.last_login.date()-request.user.last_access.date()).days != 0:
@@ -37,9 +169,7 @@ class DashboardViews(CreateView):
     fields = '__all__'
     template_name = "core/dashboard.html"
     success_url = reverse_lazy('search')
-    frase = None
-    categoria = None
-    contexto_busqueda = dict()
+    recomendados = []
 
     def form_valid(self, form):
         response = redirect(reverse_lazy('search'))
@@ -63,139 +193,11 @@ class DashboardViews(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        dashboard.send(sender=None, user=self.request.user)
         context['articles'] = models.Article.objects.all()
         context['categories'] = models.CategoryArticle.objects.all().order_by('name')
+        context['recomendados'] = self.recomendados
         return context
-
-def obtenerarticulo(request):
-    """ Función para mostrar información 
-        de un Artículo en una modal """
-    codigo = request.POST.get('codigo', None)
-    if codigo:
-        articulo = Article.objects.get(code=codigo)
-    else:
-        articulo = Article.objects.get(code=1)
-    data = {
-        'nombre' : articulo.name,
-        'descripcion' : articulo.description,
-        'precio' : articulo.price,
-        'image' : articulo.image.url,
-    }
-    click = ArticleClick()
-    click.user = request.user
-    click.article = articulo
-    click.save()
-    return JsonResponse(data)
-
-def añadircarrito(request):
-    """ Función que añade un artículo al carrito
-        de compras de un usuario """
-    try:
-        codigoart = request.POST.get('codigo', None)
-        articulo = Article.objects.get(code=codigoart)
-        user = request.user    
-        carrito = None
-        try:
-            carrito = ShoppingCart.objects.get(user=user,article=articulo)
-        except:
-            pass
-        if carrito:
-            carrito.quantity += 1
-            carrito.amount = carrito.quantity * articulo.price
-            carrito.save()
-            return JsonResponse({'exito':True})
-        sc = ShoppingCart()
-        sc.user = user
-        sc.article = articulo
-        sc.quantity = 1
-        sc.amount = articulo.price
-        sc.save()
-        return JsonResponse({'exito':True})
-    except:
-        return JsonResponse({'exito':False})
-
-def eliminarcarrito(request):
-    """ Función que elimina un item del
-        carrito de compras """
-    try:
-        codigocarrito = request.POST.get('codigo', None)
-        if not codigocarrito:
-            codigocarrito = 1
-        carrito = ShoppingCart.objects.get(id = codigocarrito)
-        carrito.delete()
-        return JsonResponse({'exito':True})
-    except:
-        return JsonResponse({'exito':False})
-
-def pagar(request):
-    """ Función que simula el pago """
-    try:
-        usuario = request.user
-        #Primero, cargo sus artículos del carrito de compras
-        carrito = ShoppingCart.objects.filter(user=usuario)
-        #Calculo el monto total a pagar
-        monto = 0
-        for articulo in carrito:
-            monto += articulo.amount
-        monto = round(monto,2)
-        #Luego, el tipo de pago (quiero crear la factura)
-        tipo_pago = request.POST.get('tipo', None)
-        #Creo el detalle de pago:
-        dp = PaymentDetails()
-        dp.user = usuario
-        dp.payment_type = tipo_pago
-        dp.transaction_code = str(random.randrange(0,99999999)).zfill(8)
-        dp.status = 'e'
-        dp.save()
-        #Creo la factura:
-        factura = Bill()
-        factura.user = usuario
-        factura.amount = monto
-        factura.address = Address.objects.get(user=usuario)
-        factura.status = 'a'
-        factura.payment = dp
-        factura.save()
-        #Creo los detalle de factura
-        for articulo in carrito:
-            detfact = BillDetails()
-            detfact.bill = factura
-            detfact.article = articulo.article
-            detfact.quantity = articulo.quantity
-            detfact.amount = articulo.amount
-            detfact.save()
-        #Limpio el carrito
-        carrito.delete()        
-        #Listo. Devuelvo que el pago fue exitoso
-        return JsonResponse({'exito':True})
-    except:
-        return JsonResponse({'exito':False})
-
-def detallefactura(request):
-    """ Consulta el detalle de una factura """
-    id_fact = request.POST.get('id')
-    detfacturas = BillDetails.objects.filter(bill_id=id_fact)
-    df = [{}]
-    for detalle in detfacturas:
-        d = {
-            'articulo':detalle.article.name,
-            'foto':detalle.article.image.url,
-            'monto':detalle.amount
-        }
-        df.append(d)
-    return JsonResponse(df,safe=False)
-
-recomiendame = django.dispatch.Signal(providing_args=['user'])
-
-def recomendaciones(request):
-    recomiendame.send(sender=None, user=request.user)
-    return JsonResponse({'exito':True})
-
-def limpiarcarrito(request):
-    try:
-        ShoppingCart.objects.filter(user=request.user).delete()
-        return JsonResponse({'exito':True})
-    except:
-        return JsonResponse({'exito':False})
 
 class ListShoppingCart(ListView):
     """ Lista de Carrito de Compra por Usuario """
@@ -263,13 +265,9 @@ class SearchView(ListView):
             context['articles'] = context['articles'].distinct()
         return context
     
-        
-def payments(request):
-    return render(request, 'core/payments.html', {})
-
 class purchases(ListView):
     model = Bill
-    template_name = 'core/purchases.html'
+    template_name = 'core/purchases.html'   
 
     def get_context_data(self, **kwargs):
         context = super(purchases, self).get_context_data(**kwargs)
