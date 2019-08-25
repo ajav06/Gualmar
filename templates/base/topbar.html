@@ -15,7 +15,7 @@
     </a>
     <div class="right menu">
         <a class="{% if '/profile/' in request.path %}active{% endif %} item" href="{% url 'profile' %}">
-            <i class="user circle icon"></i>
+            <img class="ui tiny circular centered image" style="width:32px;height:auto;" src="{{ user.image.url }}">
             {{ user.first_name }} {{user.last_name}}
         </a>
         <a class="item" onclick="javascript:confirmarCierreSesion();">

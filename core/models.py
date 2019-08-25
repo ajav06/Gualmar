@@ -25,6 +25,7 @@ class User(AbstractUser):
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name = "Número Telefonico")
     preferences = models.ManyToManyField(CategoryArticle, verbose_name='Preferencias', related_name='preferencia')
     last_access = models.DateTimeField(default=datetime.now())
+    image = models.ImageField(verbose_name='Foto', upload_to='foto', null=True, blank=True, default='foto/default.jpg')
 
     class Meta:
         verbose_name = "usuario"
