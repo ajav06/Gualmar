@@ -44,7 +44,7 @@
 <div class="ui grid" style="margin-right:2px;margin-left:2px;">
     {% csrf_token %}
     <div class="ui segment" style="background-color:#cbbede;">
-        <h3><b>Recomendaciones para ti <a class="ui tiny orange button" style="margin-left:10px;"><i class="ui icon rocket" style="padding-left:5px;"></i></a><a class="ui small green button right floated" style="padding-right:10px" onclick="javascript:window.location.reload();"><i class="ui icon redo"></i></a></b></h3><br>
+        <h3><b>Recomendaciones para ti <div class="ui tiny orange button" data-tooltip="Estas recomentaciones son generadas por IA." data-inverted="" style="margin-left:10px;"><i class="ui icon rocket" style="padding-left:5px;"></i>IA</div><a class="ui small green button right floated" style="padding-right:10px" onclick="javascript:window.location.reload();"><i class="ui icon redo"></i></a></b></h3><br>
         <div class="ui equal width grid">
             <div class="ui four link cards">
                 {% for article in recomendados %}
