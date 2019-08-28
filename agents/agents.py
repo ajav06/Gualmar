@@ -7,6 +7,7 @@ from datetime import datetime
 from django.dispatch import receiver
 from django.contrib.auth.signals import user_logged_in
 from core.views import recomiendame, dashboard, DashboardViews
+from django.db.models.signals import post_save
 import random
 
 class AgenteGualmar(Agent): ##El Agente
@@ -306,6 +307,18 @@ class AgenteGualmar(Agent): ##El Agente
         else: ##En caso contrario, elijo al azar 4 artículos.
             DashboardViews.recomendados = random.sample(articulos_interes, k=4)
 
+    def nuevo_usuario(self, user):
+        categorias = dict()
+        for categoria in CategoryArticle.objects.all(): ##Carga el diccionario con las categorías,
+            categorias[categoria] = 0 ##en interés 0.         
+        interes_usuario = { ##Ahora, construyo su elemento para el interes
+            'usuario': user.id,
+            'ult_conexion': user.last_login,
+            'categorias': categorias,
+            'articulos': dict()
+        }
+        self.tabla_interes.append(interes_usuario)
+
     ##Método que configura el agente.
            
     async def setup(self):
@@ -325,7 +338,7 @@ def ArrancarAgentes():
 ##e instan al agente a realizar la acción acorde a cada señal. 
 
 @receiver(user_logged_in) ##Cuando el usuario inicia sesión,
-def     (sender, request, user, **kwargs):    
+def user_logged_in_callback(sender, request, user, **kwargs):    
     if (user.last_login.date()-user.last_access.date()).days != 0: ##si tiene más de un día sin entrar
         agente.loginprimeravez(user) ##le recomienda artículos.
         
@@ -336,3 +349,8 @@ def recomendar_usuario(user, **kwargs):
 @receiver(dashboard) ##Cuando el usuario abre el dashboard,
 def categoria_recomendados(user, **kwargs):
     agente.categoria_recomendados(user) ##se generan sus recomendaciones aleatorias personalizadas.
+
+@receiver(post_save, sender=User)
+def nuevo_usuario(sender, **kwargs):
+    user = kwargs.get('instance')
+    agente.nuevo_usuario(user)

@@ -33,8 +33,7 @@ class User(AbstractUser):
         ordering = ['-date_joined']
 
     def __str__(self):
-        return self.username
-    
+        return self.username    
 
 class Address(models.Model):
     """ Modelo de Dirección por Usuario """

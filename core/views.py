@@ -246,6 +246,13 @@ class signup(SuccessMessageMixin, CreateView):
         for x in form['preferences'].value():
             self.object.preferences.add(x)
         self.object.save()
+        direccion = Address()
+        direccion.user = self.object
+        direccion.country = "Venezuela"
+        direccion.location = "Lara"
+        direccion.city = "Barquisimeto"
+        direccion.address = "Sector Centro"
+        direccion.save()
         return redirect(self.get_success_url())
 
 
