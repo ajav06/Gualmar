@@ -28,6 +28,7 @@
             <p><b>Teléfono:</b> {{ user.phone }} </p>
             <p><b>Correo:</b> {{ user.email }} </p>
             <p><b>Fecha de nacimiento:</b> {{ user.birth_date }} </p>
+            <p><b>Me interesa:</b> {% for categoria in user.preferences.all %}{{categoria.name}}, {% endfor %}</p>
           </div>
         </div>
       </div>

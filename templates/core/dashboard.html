@@ -15,10 +15,10 @@
             style="width:450px;height:auto;margin-top:1em;">
             <h2 class="ui header">Gualmar - Tus compras inteligentes</h2>
         <div class="ui basic segment" style="margin-left:150px;margin-right:150px;">
-        <p>Bienvenido a Gualmar. Eres libre de navegar por nuestro sitio, buscar los productos que prefieras, añadirlos
+        <h4>Bienvenido a Gualmar. Eres libre de navegar por nuestro sitio, buscar los productos que prefieras, añadirlos
             a tu carrito y comprarlos. Sin embargo, nuestro algoritmo especial de IA estará atento a tu actividad, y te
-            sugerirá compras personalizadas basado en eso. ¡Felices compras!</p>
-        </div>
+            sugerirá compras personalizadas basado en eso. ¡Felices compras!</h4>
+        </div><br>
         
         <div class="ui three column grid container">
             <div class="column" style="padding: 0 !important;">
@@ -44,7 +44,7 @@
 <div class="ui grid" style="margin-right:2px;margin-left:2px;">
     {% csrf_token %}
     <div class="ui segment" style="background-color:#cbbede;">
-        <h3><b>Recomendaciones para ti <a class="ui tiny orange button" style="margin-left:10px;"><i class="ui icon rocket" style="padding-left:5px;"></i></a><a class="ui small green button right floated" style="padding-right:10px" onclick="javascript:window.location.reload();"><i class="ui icon redo"></i></a></b></h3><br>
+        <h3><b>Recomendaciones para ti <div class="ui tiny orange button" data-tooltip="Estas recomentaciones son generadas por IA." data-inverted="" style="margin-left:10px;"><i class="ui icon rocket" style="padding-left:5px;"></i>IA</div><a class="ui small green button right floated" style="padding-right:10px" onclick="javascript:window.location.reload();"><i class="ui icon redo"></i></a></b></h3><br>
         <div class="ui equal width grid">
             <div class="ui four link cards">
                 {% for article in recomendados %}

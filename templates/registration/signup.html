@@ -1,0 +1,108 @@
+{% extends "base/base.html" %}
+
+{% load static %}
+
+{% block tittle %}Gualmar - Tus compras inteligentes.{% endblock %}
+
+{% block head %}
+
+<style type="text/css">
+    body>.grid {
+        height: 100%;
+    }
+
+    .column {
+        max-width: 450px;
+    }
+</style>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="ui middle aligned center aligned grid">
+    <div class="column">
+        <h2 class="ui image header">
+            <a href="{% url 'login' %}"><img src="{% static 'semantic/images/gualmar_logo.png' %}" class="image"
+                    style="width:100%;height:auto;margin-top:20px;"></a>
+            <div class="content">
+                Gualmar - Tus compras inteligentes.
+            </div>
+        </h2>
+        <form class="ui large form" id="sign_up" name="sign_up" method="POST">
+            {% csrf_token %}
+            <div class="ui large segment" style="background-color:#cbbede;">
+                <p>¡Regístrate para empezar tus compras!</p>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="id card icon"></i>
+                        <input type="text" name="first_name" placeholder="Nombre:" required autofocus>
+                    </div>
+                </div>
+                {{ form.first_name.erros }}
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="id card outline icon"></i>
+                        <input type="text" name="last_name" placeholder="Apellido:" required>
+                    </div>
+                </div>
+                {{ form.last_name.errors }}
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="user icon"></i>
+                        <input type="text" name="username" placeholder="Nombre de Usuario:" required>
+                    </div>
+                </div>
+                {{ form.username.errors }}
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="lock icon"></i>
+                        <input type="password" name="password1" placeholder="Constraseña:" required>
+                    </div>
+                </div>
+                {{ form.password1.errors }}
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="lock icon"></i>
+                        <input type="password" name="password2" placeholder="Confirmar constraseña:" required>
+                    </div>
+                </div>
+                {{ form.password2.errors }}
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="envelope icon"></i>
+                        <input type="text" name="email" placeholder="Email:" required>
+                    </div>
+                </div>
+                {{ form.email.errors }}
+                <div class="field">
+                    <div class="ui left icon input" data-tooltip="Selecciona tus preferencias aquí." data-inverted=""
+                        data-position="right center">
+                        <i class=" heart icon"></i>
+                        <select name="preferences" id="id_preferences" style="padding-left:35px;"
+                            class="ui fluid dropdown" required multiple="">
+                            {% for categoria in categorias %}
+                            <option value="{{categoria.id}}">{{categoria.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                {{ form.preferences.errors }}
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="calendar alternate icon"></i>
+                        <input type="text" name="birth_date" placeholder="Fecha de nacimiento: Ej. 20/08/2019" required>
+                    </div>
+                </div>
+                {{ form.birth_date.errors }}
+            </div>
+            <button id="boton" class="ui fluid large teal submit button" onclick="javascript:confirmarCreacion();"
+                type="submit">Registrarse</button>
+        </form>
+        <div class="ui message" style="background-color:#cbbede;">
+        ¿Ya tienes una cuenta? <a href=" {% url 'login' %} "><b>Inicia sesión</b></a>
+      </div>
+    </div>
+</div>
+
+{% endblock %}

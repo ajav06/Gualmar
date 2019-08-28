@@ -58,10 +58,22 @@
       </form>
 
       <div class="ui message" style="background-color:#cbbede;">
-        ¿Nunca has comprado? <a href="#"><b>Regístrate</b></a>
+        ¿Nunca has comprado? <a href=" {% url 'signup' %} "><b>Regístrate</b></a>
       </div>
     </div>
   
 </div>
 
+{% endblock %}
+
+{% block js %}
+{% if messages %}
+{% for m in messages %}
+{% if m.message == "e" %}
+<script>
+   swal.Fire("Creado", "El usuario ha sido creado con éxito.", "success");
+</script>
+{% endif %}
+{% endfor %}
+{% endif %}
 {% endblock %}
