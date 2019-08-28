@@ -1,13 +1,9 @@
 import time
 import asyncio
 from spade.agent import Agent
-from spade.behaviour import CyclicBehaviour, OneShotBehaviour
-from spade.message import Message
-from spade.template import Template
+from spade.behaviour import CyclicBehaviour
 from core.models import Search, User, Article, CategoryArticle, ArticleClick, Bill, BillDetails, ShoppingCart
-import collections
 from datetime import datetime
-from django.core.signals import request_finished
 from django.dispatch import receiver
 from django.contrib.auth.signals import user_logged_in
 from core.views import recomiendame, dashboard, DashboardViews
@@ -329,7 +325,7 @@ def ArrancarAgentes():
 ##e instan al agente a realizar la acción acorde a cada señal. 
 
 @receiver(user_logged_in) ##Cuando el usuario inicia sesión,
-def user_logged_in_callback(sender, request, user, **kwargs):    
+def     (sender, request, user, **kwargs):    
     if (user.last_login.date()-user.last_access.date()).days != 0: ##si tiene más de un día sin entrar
         agente.loginprimeravez(user) ##le recomienda artículos.
         
