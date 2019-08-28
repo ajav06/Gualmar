@@ -23,13 +23,14 @@
 <div class="ui middle aligned center aligned grid">
     <div class="column">
         <h2 class="ui image header">
-            <a href="{% url 'login' %}"><img src="{% static 'semantic/images/gualmar_logo.png' %}" class="image" style="width:100%;height:auto;margin-top:20px;"></a>
+            <a href="{% url 'login' %}"><img src="{% static 'semantic/images/gualmar_logo.png' %}" class="image"
+                    style="width:100%;height:auto;margin-top:20px;"></a>
             <div class="content">
                 Gualmar - Tus compras inteligentes.
             </div>
         </h2>
         <form class="ui large form" id="sign_up" name="sign_up" method="POST">
-        {% csrf_token %}
+            {% csrf_token %}
             <div class="ui large segment" style="background-color:#cbbede;">
                 <p>¡Regístrate para empezar tus compras!</p>
                 <div class="field">
@@ -74,13 +75,15 @@
                     </div>
                 </div>
                 {{ form.email.errors }}
-                <div class="field" > 
-                    <div class="ui left icon input" data-tooltip="Selecciona tus preferencias aquí." data-inverted="" data-position="right center" >
+                <div class="field">
+                    <div class="ui left icon input" data-tooltip="Selecciona tus preferencias aquí." data-inverted=""
+                        data-position="right center">
                         <i class=" heart icon"></i>
-                        <select name="preferences" id="id_preferences" style="padding-left:35px;" class="ui fluid dropdown" required multiple="">
-                        {% for categoria in categorias %}
+                        <select name="preferences" id="id_preferences" style="padding-left:35px;"
+                            class="ui fluid dropdown" required multiple="">
+                            {% for categoria in categorias %}
                             <option value="{{categoria.id}}">{{categoria.name}}</option>
-                        {% endfor %}
+                            {% endfor %}
                         </select>
                     </div>
                 </div>
@@ -93,10 +96,13 @@
                 </div>
                 {{ form.birth_date.errors }}
             </div>
-            <button id="boton" class="ui fluid large teal submit button" onclick="javascript:confirmarCreacion();" type="submit">Registrarse</button>
+            <button id="boton" class="ui fluid large teal submit button" onclick="javascript:confirmarCreacion();"
+                type="submit">Registrarse</button>
+        </form>
+        <div class="ui message" style="background-color:#cbbede;">
+        ¿Ya tienes una cuenta? <a href=" {% url 'login' %} "><b>Inicia sesión</b></a>
+      </div>
     </div>
-    </form>
-</div>
 </div>
 
 {% endblock %}
