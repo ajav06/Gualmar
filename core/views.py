@@ -4,13 +4,15 @@ from django.views.generic import ListView, DetailView, CreateView, TemplateView
 from django.forms import Form
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
-from .models import Article, Address, User, ShoppingCart, Bill, BillDetails, PaymentDetails, ArticleClick
+from .models import Article, Address, User, ShoppingCart, Bill, BillDetails, PaymentDetails, ArticleClick, CategoryArticle
 import random
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core import serializers
 from django.shortcuts import redirect
 from datetime import datetime
 import time
 import django.dispatch
+from .forms import CrearUsuario
 
 from . import models
 
@@ -222,9 +224,30 @@ class ListShoppingCart(ListView):
         context["total"] = round(montoT,2)
         return context
 
-class login(LoginView):
+class login(SuccessMessageMixin, LoginView):
     """ Inicio de Sesión del Usuario """
     template_name = 'registration/login.html'
+
+class signup(SuccessMessageMixin, CreateView):
+    """ Creación del Usuario """
+    model = User
+    form_class = CrearUsuario
+    template_name = 'registration/signup.html'
+    success_url = reverse_lazy('login')
+    success_message = "e"
+    
+    def get_context_data(self, **kwargs):
+        context = super(signup, self).get_context_data(**kwargs)
+        context['categorias'] = CategoryArticle.objects.all()
+        return context
+
+    def form_valid(self, form):
+        self.object = form.save()
+        for x in form['preferences'].value():
+            self.object.preferences.add(x)
+        self.object.save()
+        return redirect(self.get_success_url())
+
 
 class profile(DetailView):
     model = User

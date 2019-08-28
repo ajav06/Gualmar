@@ -15,6 +15,31 @@ function confirmarCierreSesion() {
     })
 };
 
+function confirmarCreacion() {
+    formulario = document.getElementById('sign_up').elements;
+
+    for (var i = 0, element; element = formulario[i++];) {
+        if (element.id != "id_preferences" && element.id != "boton" && element.value == ""){
+            return;
+        }
+    }
+
+    Swal.fire({
+        title: "Confirmar creación",
+        text: "¿Está seguro que desea crear el usuario?",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#58a05d",
+        cancelButtonColor: '#d33',
+        confirmButtonText: "Sí",
+        cancelButtonText: "Cancelar",
+    }).then((result) => {
+        if (result.value) {
+            document.getElementById('sign_up').submit();
+        }
+    });
+};
+
 function Consultar(codigo) {
     var token = $('input[name="csrfmiddlewaretoken"]').val();
     $.ajax({
@@ -190,6 +215,11 @@ function Pagar(tipo) {
 
 $('#formulario_pago').submit(function() {
     Pagar('tc');
+    return false;
+});
+
+$('#sign_up').submit(function() {
+    confirmarCreacion();
     return false;
 });
 
