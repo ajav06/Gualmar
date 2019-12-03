@@ -8,7 +8,7 @@ Sistema de compras online, con carga de carrito de inteligente de acuerdo a sus 
 ## Front-End:
 * HTML5
 * CSS3
-* Semantic-UI: Semantic es un framework de desarrollo que permite crear diseños hermosos y flexibles utilizando HTML amigable.
+* Semantic-UI: es un framework de desarrollo que permite crear diseños hermosos y flexibles utilizando HTML amigable.
 
 ## Desarrolladores:
 ### Back-End:
